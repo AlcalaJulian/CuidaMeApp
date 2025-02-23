@@ -4,8 +4,11 @@ import es.usj.mastertsa.cuidameapp.data.local.room.indication.IndicationEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.medication.MedicationEntity
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
+import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
 import es.usj.mastertsa.cuidameapp.domain.medication.Medication
+import es.usj.mastertsa.cuidameapp.domain.medication.MedicationDetail
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
+import es.usj.mastertsa.cuidameapp.domain.patient.PatientDetail
 
 
 fun PatientEntity.toDomain(): Patient {
@@ -69,3 +72,54 @@ fun Indication.toEntity(): IndicationEntity {
         dosage = this.dosage
     )
 }
+
+//
+fun PatientEntity.toPatientDetail() = PatientDetail(
+        id = this.id,
+        identification = this.identification,
+        identificationType = this.identificationType,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        birthDate = this.birthDate,
+        emergencyContact = this.emergencyContact
+    )
+
+fun PatientDetail.toPatientEntity() = PatientEntity(
+        id = this.id,
+        identification = this.identification,
+        identificationType = this.identificationType,
+        firstName = this.firstName,
+        lastName = this.lastName,
+        birthDate = this.birthDate,
+        emergencyContact = this.emergencyContact
+    )
+
+fun MedicationEntity.toMedicationDetail() = Medication(
+        id = this.id,
+        name = this.name,
+        description = this.description,
+        administrationType = this.administrationType
+    )
+
+fun MedicationDetail.toMedicationEntity() = MedicationEntity(
+        id = this.id,
+        name = this.name,
+        description = this.description,
+        administrationType = this.administrationType
+    )
+
+fun IndicationEntity.toIndicationDetail() =  IndicationDetail(
+        id = this.id,
+         medicationId = this.medicationId,
+        recurrenceId = this.recurrenceId,
+        startDate = this.startDate,
+        dosage = this.dosage
+    )
+
+fun IndicationDetail.toIndicationEntity() = IndicationEntity(
+        id = this.id,
+        medicationId = this.medicationId,
+        recurrenceId = this.recurrenceId,
+        startDate = this.startDate,
+        dosage = this.dosage
+    )

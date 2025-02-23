@@ -1,5 +1,11 @@
 package es.usj.mastertsa.cuidameapp.domain.patient
 
-class PatientDetail {
-
-}
+data class PatientDetail(
+    val id: Long,
+    val identification: String,
+    val identificationType: Int,
+    val firstName: String,
+    val lastName: String,
+    val birthDate: String,
+    val emergencyContact: String
+)
