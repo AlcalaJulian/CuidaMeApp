@@ -16,7 +16,7 @@ fun NavigationHelper(navController: NavHostController, modifier: Modifier = Modi
 
         NavHost(
             navController = navController,
-            startDestination = Home,
+            startDestination = PatientList,
             modifier = modifier
         ){
 

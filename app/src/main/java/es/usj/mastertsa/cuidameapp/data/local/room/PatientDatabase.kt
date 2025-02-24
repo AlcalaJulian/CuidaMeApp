@@ -11,7 +11,7 @@ import es.usj.mastertsa.cuidameapp.data.local.room.medication.MedicationEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientDao
 import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientEntity
 
-@Database(entities = [PatientEntity::class,MedicationEntity::class,IndicationEntity::class], exportSchema = true, version = 1)
+@Database(entities = [PatientEntity::class,MedicationEntity::class,IndicationEntity::class], exportSchema = false, version = 1)
 abstract class PatientDatabase : RoomDatabase() {
 
     abstract fun getPatientDao(): PatientDao
