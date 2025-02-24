@@ -1,13 +1,9 @@
-package es.usj.mastertsa.cuidameapp.ui.indication
+package es.usj.mastertsa.cuidameapp.ui.patient.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import es.usj.mastertsa.cuidameapp.domain.indication.GetAllIndicationsUseCase
 
-class IndicationListViewModel(
-    private val getListUseCase: GetAllIndicationsUseCase
-): ViewModel() {
-
+class PatientDetailViewModel: ViewModel() {
 
     companion object{
         fun factory(): ViewModelProvider.Factory = object : ViewModelProvider.Factory {

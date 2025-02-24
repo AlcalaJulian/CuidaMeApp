@@ -1,8 +1,8 @@
-package es.usj.mastertsa.cuidameapp.ui.patient
+package es.usj.mastertsa.cuidameapp.ui.medication.detail
 
 import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
 
-data class PatientDetailUiState(
+data class MedicationDetailUiState(
     val loading: Boolean = false,
     val data: IndicationDetail? = null,
     val error: String? = null

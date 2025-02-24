@@ -1,6 +1,5 @@
-package es.usj.mastertsa.cuidameapp.ui.indication
+package es.usj.mastertsa.cuidameapp.ui.indication.detail
 
-import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
 
 data class IndicationDetailUiState(
