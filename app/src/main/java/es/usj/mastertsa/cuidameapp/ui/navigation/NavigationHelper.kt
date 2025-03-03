@@ -21,7 +21,7 @@ fun NavigationHelper(navController: NavHostController, modifier: Modifier = Modi
         ){
 
             composable<PatientList> {
-                PatientListScreen { id -> navController.navigate( PatientDetail(id = id)) }
+                PatientListScreen ( { id -> navController.navigate( PatientDetail(id = id)) })
             }
             composable<PatientDetail> {
                 MedicationDetailScreen()
