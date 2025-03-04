@@ -1,34 +1,30 @@
 package es.usj.mastertsa.cuidameapp.ui.navigation
 
-import kotlinx.serialization.Serializable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.twotone.Person
 import androidx.compose.ui.graphics.vector.ImageVector
+import kotlinx.serialization.Serializable
 
 data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
-
-@Serializable
-object Home
 
 @Serializable
 object MedicationList
 
 @Serializable
-data class MedicationDetail(val id: Int)
+data class MedicationDetail(val id: Long)
 
 @Serializable
 object IndicationList
 
 @Serializable
-data class IndicationDetail(val id: Int)
+data class IndicationDetail(val id: Long)
 
 @Serializable
 object PatientList
 
 @Serializable
-data class PatientDetail(val id: Int)
+data class PatientDetail(val id: Long)
 
 sealed class Screens{
     companion object{

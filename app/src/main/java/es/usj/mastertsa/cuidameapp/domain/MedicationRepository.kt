@@ -7,4 +7,5 @@ interface MedicationRepository {
     suspend fun getAllMedications(): List<Medication>
     suspend fun getMedicationById(id: Long): MedicationDetail
     suspend fun deleteMedicationById(id: Long)
+    suspend fun addMedication(medication: Medication)
 }
