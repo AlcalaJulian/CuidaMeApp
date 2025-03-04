@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
+import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.medication.GetAllMedicationsUseCase
 
 class MedicationListViewModel(
@@ -34,9 +35,9 @@ init {
         fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-                val repo = MedicamentRepository(PatientDatabase.provideDatabase(context))
+                val repo = MedicationRepositoryImpl(PatientDatabase.provideDatabase(context))
                 val useCase = GetAllMedicationsUseCase(repo)
-                return MedicationListViewModel(useCase)
+                return MedicationListViewModel(useCase) as T
             }
         }
     }

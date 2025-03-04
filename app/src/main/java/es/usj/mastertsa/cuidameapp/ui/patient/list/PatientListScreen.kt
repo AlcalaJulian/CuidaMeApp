@@ -33,7 +33,7 @@ import androidx.compose.runtime.setValue
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientListScreen(
-    navigateToDetail: (id: Int) -> Unit,
+    navigateToDetail: (id: Long) -> Unit,
     viewModel: PatientListViewModel = viewModel(
         factory = PatientListViewModel.factory(LocalContext.current)
     )
@@ -116,7 +116,7 @@ fun ErrorText(message: String) {
 @Composable
 fun PatientList(
     patients: List<Patient>,
-    navigateToDetail: (id: Int) -> Unit
+    navigateToDetail: (id: Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -124,7 +124,7 @@ fun PatientList(
     ) {
         items(patients) { patient ->
             PatientItem(patient = patient) {
-                navigateToDetail(patient.id.toInt())
+                navigateToDetail(patient.id)
             }
         }
     }

@@ -14,7 +14,8 @@ import kotlinx.coroutines.flow.map
 class PatientRepositoryImpl(private val db: PatientDatabase): PatientRepository {
 
     override suspend fun getAllPatients(): List<Patient> {
-        return db.getPatientDao().getAllPatients().first().map() { it.toDomain() } }
+        return db.getPatientDao().getAllPatients().first().map { it.toDomain() }
+    }
 
     override suspend fun getPatientById(id: Long): PatientDetail {
         return db.getPatientDao().getPatientById(id)?.toPatientDetail()

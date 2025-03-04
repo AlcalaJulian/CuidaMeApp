@@ -22,7 +22,7 @@ interface MedicationDao {
     suspend fun insertMedications(list: List<MedicationEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMedication(patient: MedicationEntity)
+    suspend fun insertMedication(medication: MedicationEntity)
 
     @Update
     suspend fun updateMedication(medication: MedicationEntity)

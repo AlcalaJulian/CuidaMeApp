@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
+import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.medication.AddMedicationUseCase
 import es.usj.mastertsa.cuidameapp.domain.medication.Medication
 import kotlinx.coroutines.launch
@@ -32,9 +33,9 @@ class MedicationAddViewModel(private val useCase: AddMedicationUseCase): ViewMod
         fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-                val repo = MedicamentRepository(PatientDatabase.provideDatabase(context))
+                val repo = MedicationRepositoryImpl(PatientDatabase.provideDatabase(context))
                 val useCase = AddMedicationUseCase(repo)
-                return MedicationAddViewModel(useCase)
+                return MedicationAddViewModel(useCase) as T
             }
         }
     }

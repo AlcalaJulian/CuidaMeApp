@@ -94,7 +94,7 @@ fun PatientDetail.toPatientEntity() = PatientEntity(
         emergencyContact = this.emergencyContact
     )
 
-fun MedicationEntity.toMedicationDetail() = Medication(
+fun MedicationEntity.toMedicationDetail() = MedicationDetail(
         id = this.id,
         name = this.name,
         description = this.description,

@@ -38,7 +38,7 @@ import es.usj.mastertsa.cuidameapp.ui.medication.add.MedicationAddScreen
 fun MedicationListScreen(
     viewModel: MedicationListViewModel = viewModel(factory = MedicationListViewModel.factory(
         LocalContext.current)),
-    navigateToDetail:(id: Int) -> Unit
+    navigateToDetail:(id: Long) -> Unit
 ){
 
     val uiState = viewModel.uiState
@@ -83,7 +83,7 @@ fun MedicationListTopBar(context: Context) {
     )
 
     TopAppBar(
-        title = { Text(text = "Lista de Pacientes") },
+        title = { Text(text = "Lista de medicamentos") },
         actions = {
             IconButton(onClick = { showDialog = true }) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar Paciente")
@@ -119,7 +119,7 @@ fun ErrorText(message: String) {
 @Composable
 fun MedicationList(
     medications: List<Medication>,
-    navigateToDetail: (id: Int) -> Unit
+    navigateToDetail: (id: Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -127,7 +127,7 @@ fun MedicationList(
     ) {
         items(medications) { medication ->
             MedicationItem(medication = medication) {
-                navigateToDetail(medication.id.toInt())
+                navigateToDetail(medication.id)
             }
         }
     }
@@ -142,7 +142,9 @@ fun MedicationItem(medication: Medication, onClick: () -> Unit) {
             .clickable { onClick() }
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
-
+            Text(text = medication.name)
+            Text(text = medication.description)
+            Text(text = medication.administrationType.toString())
 
         }
     }
