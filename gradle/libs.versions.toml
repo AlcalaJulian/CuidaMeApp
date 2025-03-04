@@ -20,6 +20,7 @@ kspVersion = "2.1.0-1.0.29"
 roomCompiler = "2.6.1"
 google-services = "4.4.2"
 firebaseDatabaseKtx = "21.0.0"
+storage = "1.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,6 +48,7 @@ coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", versi
 datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomCompiler" }
+androidx-storage = { group = "androidx.test.services", name = "storage", version.ref = "storage" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

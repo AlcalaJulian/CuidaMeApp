@@ -11,7 +11,7 @@ import es.usj.mastertsa.cuidameapp.domain.medication.MedicationDetail
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
 import es.usj.mastertsa.cuidameapp.domain.patient.PatientDetail
 
-class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepository, MedicationRepository, PatientRepository {
+class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepository {
     override suspend fun getAllIndications(): List<Indication> {
         TODO("Not yet implemented")
     }
@@ -24,27 +24,6 @@ class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepos
         TODO("Not yet implemented")
     }
 
-    override suspend fun getAllMedications(): List<Medication> {
-        TODO("Not yet implemented")
-    }
 
-    override suspend fun getMedicationById(id: Long): MedicationDetail {
-        TODO("Not yet implemented")
-    }
 
-    override suspend fun deleteMedicationById(id: Long) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getAllPatients(): List<Patient> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getPatientById(id: Long): PatientDetail {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deletePatientById(id: Long) {
-        TODO("Not yet implemented")
-    }
 }
