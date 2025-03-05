@@ -27,13 +27,12 @@ var uiState by mutableStateOf(MedicationDetailUiState())
     val id = savedState.toRoute<MedicationDetail>().id
 
     init {
-        viewModelScope.launch {
             getMedicamentById(id)
-        }
     }
 
-    private suspend fun getMedicamentById(id: Long){
+    private fun getMedicamentById(id: Long){
         uiState = uiState.copy(loading = true)
+        viewModelScope.launch {
         try {
             val medicament = useCase.execute(id)
             uiState = uiState.copy(loading = false, data = medicament)
@@ -41,6 +40,7 @@ var uiState by mutableStateOf(MedicationDetailUiState())
         catch (ex: Exception){
             uiState = uiState.copy(loading = false, error = ex.message)
         }
+            }
     }
 
     companion object{

@@ -59,7 +59,8 @@ fun IndicationEntity.toDomain(): Indication {
         medicationId = this.medicationId,
         recurrenceId = this.recurrenceId,
         startDate = this.startDate,
-        dosage = this.dosage
+        dosage = this.dosage,
+        patientId = this.patientId
     )
 }
 
@@ -69,7 +70,8 @@ fun Indication.toEntity(): IndicationEntity {
         medicationId = this.medicationId,
         recurrenceId = this.recurrenceId,
         startDate = this.startDate,
-        dosage = this.dosage
+        dosage = this.dosage,
+        patientId = this.patientId
     )
 }
 
@@ -113,7 +115,8 @@ fun IndicationEntity.toIndicationDetail() =  IndicationDetail(
          medicationId = this.medicationId,
         recurrenceId = this.recurrenceId,
         startDate = this.startDate,
-        dosage = this.dosage
+        dosage = this.dosage,
+        patientId = this.patientId
     )
 
 fun IndicationDetail.toIndicationEntity() = IndicationEntity(
@@ -121,5 +124,6 @@ fun IndicationDetail.toIndicationEntity() = IndicationEntity(
         medicationId = this.medicationId,
         recurrenceId = this.recurrenceId,
         startDate = this.startDate,
-        dosage = this.dosage
+        dosage = this.dosage,
+        patientId = this.patientId
     )

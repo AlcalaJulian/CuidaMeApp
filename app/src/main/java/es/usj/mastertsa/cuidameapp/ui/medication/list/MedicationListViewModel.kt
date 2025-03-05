@@ -6,9 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.medication.GetAllMedicationsUseCase
+import kotlinx.coroutines.launch
 
 class MedicationListViewModel(
     private val useCase: GetAllMedicationsUseCase
@@ -17,18 +19,17 @@ class MedicationListViewModel(
     var uiState by mutableStateOf(MedicationListUiState())
         private set
 
-init {
 
-}
-     suspend fun getAllMedications(){
+    fun getAllMedications(){
         uiState = uiState.copy(loading = true)
-        try {
-            val medicaments = useCase.execute()
-            uiState = uiState.copy(loading = false, data = medicaments)
-        }
-        catch (ex: Exception){
-            uiState = uiState.copy(loading = false, error = ex.message)
-        }
+         viewModelScope.launch {
+             try {
+                 val medicaments = useCase.execute()
+                 uiState = uiState.copy(loading = false, data = medicaments)
+             } catch (ex: Exception) {
+                 uiState = uiState.copy(loading = false, error = ex.message)
+             }
+         }
     }
 
     companion object{
@@ -40,5 +41,6 @@ init {
                 return MedicationListViewModel(useCase) as T
             }
         }
+
     }
 }

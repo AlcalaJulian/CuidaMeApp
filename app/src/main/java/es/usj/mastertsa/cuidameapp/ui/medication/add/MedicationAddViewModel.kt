@@ -11,6 +11,7 @@ import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.medication.AddMedicationUseCase
 import es.usj.mastertsa.cuidameapp.domain.medication.Medication
+import es.usj.mastertsa.cuidameapp.ui.medication.list.MedicationListViewModel
 import kotlinx.coroutines.launch
 
 class MedicationAddViewModel(private val useCase: AddMedicationUseCase): ViewModel() {
@@ -21,11 +22,12 @@ class MedicationAddViewModel(private val useCase: AddMedicationUseCase): ViewMod
      fun addMedication(medication: Medication){
         viewModelScope.launch {
             try {
-
+                useCase.execute(medication)
             }catch (ex: Exception){
                 uiState = uiState.copy(loading = false, error = ex.message)
             }
         }
+
 
     }
 

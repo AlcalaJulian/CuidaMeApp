@@ -15,7 +15,10 @@ interface IndicationDao {
     fun getAllIndications(): Flow<List<IndicationEntity>>
 
     @Query("SELECT * FROM IndicationRoom WHERE id = :id")
-    suspend fun getIndicationById(id: Long): IndicationEntity?
+    suspend fun getIndicationById(id: Long): IndicationEntity
+
+    @Query("SELECT * FROM IndicationRoom WHERE patientId = :id")
+    suspend fun getIndicationByPatientId(id: Long): List<IndicationEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIndication(indication: IndicationEntity)

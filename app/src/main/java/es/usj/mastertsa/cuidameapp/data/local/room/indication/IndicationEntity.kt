@@ -5,7 +5,8 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "IndicationRoom")
 data class IndicationEntity(
-    @PrimaryKey val id: Long,
+    @PrimaryKey(autoGenerate = true) val id: Long,
+    val patientId:Long,
     val medicationId: Int,
     val recurrenceId: String,
     val startDate: String,

@@ -33,7 +33,7 @@ class PatientListViewModel(private val getAllPatient:GetAllPatientsUseCase,priva
         }
     }
 
-    suspend fun getAllPatients(){
+    fun getAllPatients(){
         patients = patients.copy(loading = true)
         viewModelScope.launch {
             try {

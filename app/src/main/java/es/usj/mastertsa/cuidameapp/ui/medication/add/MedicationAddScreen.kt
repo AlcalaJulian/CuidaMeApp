@@ -83,9 +83,9 @@ fun MedicationAddScreen(
                                 viewModel.addMedication(
                                     Medication(
                                         id = 0L,
-                                        description = "",
-                                        name = "",
-                                        administrationType = 1
+                                        description = description,
+                                        name = name,
+                                        administrationType = administrationType.toInt()
                                     )
                                 )
                                 onDismiss()
@@ -96,6 +96,7 @@ fun MedicationAddScreen(
                             CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         } else {
                             Text("Agregar")
+
                         }
                     }
                 }

@@ -9,6 +9,7 @@ import es.usj.mastertsa.cuidameapp.ui.indication.detail.IndicationDetailScreen
 import es.usj.mastertsa.cuidameapp.ui.indication.list.IndicationListScreen
 import es.usj.mastertsa.cuidameapp.ui.medication.detail.MedicationDetailScreen
 import es.usj.mastertsa.cuidameapp.ui.medication.list.MedicationListScreen
+import es.usj.mastertsa.cuidameapp.ui.patient.detail.PatientDetailScreen
 import es.usj.mastertsa.cuidameapp.ui.patient.list.PatientListScreen
 
 @Composable
@@ -24,7 +25,7 @@ fun NavigationHelper(navController: NavHostController, modifier: Modifier = Modi
                 PatientListScreen ( { id -> navController.navigate( PatientDetail(id = id)) })
             }
             composable<PatientDetail> {
-                MedicationDetailScreen(){ navController.popBackStack()}
+                PatientDetailScreen(){ navController.popBackStack()}
             }
             composable<IndicationDetail> {
                 IndicationDetailScreen()
