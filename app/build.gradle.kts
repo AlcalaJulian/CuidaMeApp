@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "es.usj.mastertsa.cuidameapp"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -44,6 +44,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.storage)
+    implementation(libs.androidx.compose.material)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
