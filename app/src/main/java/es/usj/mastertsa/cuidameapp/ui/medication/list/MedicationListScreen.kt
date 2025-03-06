@@ -115,9 +115,6 @@ fun MedicationItem(
     onClick: () -> Unit,
     onDelete: (Long) -> Unit
 ) {
-    // State for swipe to dismiss
-    val swipeState = rememberSwipeToDismissBoxState()
-
     // For managing the confirmation dialog visibility
     var showDialog by remember { mutableStateOf(false) }
 

@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface IndicationDao {
 
-    @Query("SELECT * FROM IndicationRoom")
-    fun getAllIndications(): Flow<List<IndicationEntity>>
+    @Query("SELECT * FROM IndicationDetailView")
+    fun getAllIndications(): Flow<List<IndicationDetailView>>
 
     @Query("SELECT * FROM IndicationRoom WHERE id = :id")
     suspend fun getIndicationById(id: Long): IndicationEntity

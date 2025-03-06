@@ -12,22 +12,19 @@ import es.usj.mastertsa.cuidameapp.data.repository.IndicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.data.repository.PatientRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.indication.AddAnIndicationToPatientUseCase
+import es.usj.mastertsa.cuidameapp.domain.indication.DeleteIndicationUseCase
 import es.usj.mastertsa.cuidameapp.domain.indication.GetAllIndicationsUseCase
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.medication.GetAllMedicationsUseCase
-import es.usj.mastertsa.cuidameapp.domain.medication.Medication
-import es.usj.mastertsa.cuidameapp.domain.patient.AddPatientUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.GetAllPatientsUseCase
-import es.usj.mastertsa.cuidameapp.domain.patient.Patient
-import es.usj.mastertsa.cuidameapp.ui.patient.list.PatientListUiState
-import es.usj.mastertsa.cuidameapp.ui.patient.list.PatientListViewModel
 import kotlinx.coroutines.launch
 
 class IndicationListViewModel(
     private val getAllIndicationsUseCase: GetAllIndicationsUseCase,
     private val addAnIndicationToPatientUseCase: AddAnIndicationToPatientUseCase,
     private val getAllPatientsUseCase: GetAllPatientsUseCase,
-    private val getAllMedicationsUseCase: GetAllMedicationsUseCase
+    private val getAllMedicationsUseCase: GetAllMedicationsUseCase,
+    private val deleteIndicationUseCase: DeleteIndicationUseCase
 ): ViewModel() {
     var indications by mutableStateOf(IndicationListUiState())
         private set
@@ -73,12 +70,22 @@ class IndicationListViewModel(
         indications = indications.copy(loading = true)
         viewModelScope.launch {
             try {
-                val useCaseGetAllindications = getAllIndicationsUseCase.execute()
-                indications = indications.copy(data = useCaseGetAllindications, loading = false)
+                val useCaseGetAllIndications = getAllIndicationsUseCase.execute()
+                indications = indications.copy(data = useCaseGetAllIndications, loading = false)
             } catch(exception:Exception) {
                 indications = indications.copy(error = exception.message, loading = false)
             }
 
+        }
+    }
+
+    fun deleteIndication(id: Long) {
+        viewModelScope.launch {
+            try {
+                deleteIndicationUseCase.execute(id)
+            } catch (e: Exception) {
+                indications = indications.copy(error = "Failed to delete indication")
+            }
         }
     }
 
@@ -98,12 +105,13 @@ class IndicationListViewModel(
                 val addAnIndicationToPatientUseCase = AddAnIndicationToPatientUseCase(indicationRepositoryImpl)
                 val getAllPatientsUseCase = GetAllPatientsUseCase(patientRepositoryImpl)
                 val getAllMedicationsUseCase = GetAllMedicationsUseCase(medicationsRepositoryImpl)
+                val deleteUseCase = DeleteIndicationUseCase(indicationRepositoryImpl)
                 return IndicationListViewModel(
                     getAllIndicationsUseCase,
                     addAnIndicationToPatientUseCase,
                     getAllPatientsUseCase,
-                    getAllMedicationsUseCase
-
+                    getAllMedicationsUseCase,
+                    deleteUseCase
                 ) as T
             }
         }

@@ -17,8 +17,8 @@ import es.usj.mastertsa.cuidameapp.domain.patient.PatientDetail
 import kotlinx.coroutines.flow.first
 
 class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepository {
-    override suspend fun getAllIndications(): List<Indication> {
-        return db.getIndicationDao().getAllIndications().first().map { it.toDomain() }
+    override suspend fun getAllIndications(): List<IndicationDetail> {
+        return db.getIndicationDao().getAllIndications().first().map { it.toIndicationDetail() }
 
     }
 

@@ -29,8 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import es.usj.mastertsa.cuidameapp.ui.shared.DeleteConfirmDialog
 import es.usj.mastertsa.cuidameapp.ui.shared.ErrorText
 import es.usj.mastertsa.cuidameapp.ui.shared.LoadingIndicator
+import es.usj.mastertsa.cuidameapp.ui.shared.SwipeBox
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +66,10 @@ fun PatientListScreen(
                 else -> {
                     PatientList(
                         patients = uiState.data,
-                        navigateToDetail = navigateToDetail
+                        navigateToDetail = navigateToDetail,
+                        onDelete = { id ->
+                            viewModel.deleteMedication(id)
+                        }
                     )
                 }
             }
@@ -98,34 +103,58 @@ fun PatientListTopBar(context: Context) {
 @Composable
 fun PatientList(
     patients: List<Patient>,
-    navigateToDetail: (id: Long) -> Unit
+    navigateToDetail: (id: Long) -> Unit,
+    onDelete: (Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(8.dp)
     ) {
         items(patients) { patient ->
-            PatientItem(patient = patient) {
+            PatientItem(patient = patient, onClick = {
                 navigateToDetail(patient.id)
-            }
+            }, onDelete = {
+                onDelete(patient.id)
+            })
         }
     }
 }
 
 @Composable
-fun PatientItem(patient: Patient, onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { onClick() }
+fun PatientItem(
+    patient: Patient,
+    onClick: () -> Unit,
+    onDelete: (Long) -> Unit
+) {
+    // For managing the confirmation dialog visibility
+    var showDialog by remember { mutableStateOf(false) }
+
+    SwipeBox(
+        onDelete = {
+            showDialog = true
+        },
+        onEdit = { showDialog = true },
     ) {
-        Row(modifier = Modifier.padding(16.dp)) {
-            Text(text = patient.firstName)
-            Text(text = patient.lastName)
-            Text(text = patient.identification)
-
-
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+        ) {
+            Row(modifier = Modifier.padding(16.dp)) {
+                Column {
+                    Text(text = "${ patient.firstName } ${ patient.lastName }")
+                    Text(text = patient.identification)
+                }
+            }
         }
+    }
+    // Confirmation dialog
+    if (showDialog) {
+        DeleteConfirmDialog(
+            message = "",
+            ok = {
+                onDelete(patient.id)  // Perform the delete action
+                showDialog = false // Close the dialog after deletion
+            }, cancel = { showDialog = false })
     }
 }

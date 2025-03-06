@@ -11,11 +11,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.PatientRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.patient.AddPatientUseCase
+import es.usj.mastertsa.cuidameapp.domain.patient.DeletePatientUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.GetAllPatientsUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
 import kotlinx.coroutines.launch
 
-class PatientListViewModel(private val getAllPatient:GetAllPatientsUseCase,private var addPatient: AddPatientUseCase): ViewModel() {
+class PatientListViewModel(
+    private val getAllPatient:GetAllPatientsUseCase,
+    private val addPatient: AddPatientUseCase,
+    private val deletePatien: DeletePatientUseCase
+): ViewModel() {
     var patients by mutableStateOf(PatientListUiState())
     private set
 
@@ -45,6 +50,19 @@ class PatientListViewModel(private val getAllPatient:GetAllPatientsUseCase,priva
 
         }
     }
+
+    fun deleteMedication(id: Long) {
+        viewModelScope.launch {
+            try {
+                deletePatien.execute(id)
+                patients = patients.copy(loading = false)
+            } catch(exception:Exception) {
+                patients = patients.copy(error = exception.message, loading = false)
+            }
+
+        }
+    }
+
     companion object{
         fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>):  T {
@@ -54,8 +72,9 @@ class PatientListViewModel(private val getAllPatient:GetAllPatientsUseCase,priva
                 )
                 val getAllPatients = GetAllPatientsUseCase(patientRepositoryImpl)
                 val addPatientUseCase = AddPatientUseCase(patientRepositoryImpl)
+                val deletePatientUseCase = DeletePatientUseCase(patientRepositoryImpl)
 
-                return PatientListViewModel(getAllPatients,addPatientUseCase) as T
+                return PatientListViewModel(getAllPatients,addPatientUseCase, deletePatientUseCase) as T
             }
         }
     }

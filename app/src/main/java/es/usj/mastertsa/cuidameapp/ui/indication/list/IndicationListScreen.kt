@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +14,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,14 +33,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
+import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
 import es.usj.mastertsa.cuidameapp.domain.medication.Medication
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
+import es.usj.mastertsa.cuidameapp.ui.shared.DeleteConfirmDialog
 import es.usj.mastertsa.cuidameapp.ui.shared.ListTopBar
+import es.usj.mastertsa.cuidameapp.ui.shared.SwipeBox
 
 @Composable
 fun IndicationListScreen(
@@ -49,7 +56,6 @@ fun IndicationListScreen(
     val uiState = viewModel.indications
     var showAddIndicationDialog by remember { mutableStateOf(false) }
 
-    // Al iniciar la pantalla, cargamos la lista de indicaciones
     LaunchedEffect(Unit) {
         viewModel.getAllIndications()
     }
@@ -81,11 +87,16 @@ fun IndicationListScreen(
                         if (uiState.data.isNotEmpty()) {
                             LazyColumn(modifier = Modifier.weight(1f)) {
                                 items(uiState.data) { indication ->
-                                    Text(
-                                        text = "• Indicación ID: ${indication.id} " +
-                                                "MedicamentoID: ${indication.medicationId}, " +
-                                                "Inicio: ${indication.startDate}",
-                                        modifier = Modifier.clickable { navigateToDetail(indication.id) }
+//                                    Text(
+//                                        text = "• Indicación ID: ${indication.id} " +
+//                                                "MedicamentoID: ${indication.medicationId}, " +
+//                                                "Inicio: ${indication.startDate}",
+//                                        modifier = Modifier.clickable { navigateToDetail(indication.id) }
+//                                    )
+                                    IndicationItem(
+                                        indication,
+                                        onClick = { navigateToDetail(indication.id) },
+                                        onDelete = { id -> viewModel.deleteIndication(id) }
                                     )
                                 }
                             }
@@ -117,7 +128,6 @@ fun IndicationListScreen(
         }
     }
 
-    // Dialog para agregar una nueva indicación
     if (showAddIndicationDialog) {
         AddIndicationDialog(
             onDismiss = { showAddIndicationDialog = false },
@@ -128,6 +138,63 @@ fun IndicationListScreen(
             patients = uiState.patientList,
             medications = uiState.medicationsList
         )
+    }
+}
+
+@Composable
+fun IndicationItem(
+    indication: IndicationDetail,
+    onClick: () -> Unit,
+    onDelete: (Long) -> Unit
+) {
+    // For managing the confirmation dialog visibility
+    var showDialog by remember { mutableStateOf(false) }
+
+    SwipeBox(
+        onDelete = {
+            showDialog = true
+        },
+        onEdit = { showDialog = true },
+    ) {
+        //Display the medication item as a card
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onClick() }
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        text = indication.patientName,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(text = indication.medicationName, style = MaterialTheme.typography.bodySmall)
+                }
+                Text(
+                    text = indication.startDate,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+
+
+    // Confirmation dialog
+    if (showDialog) {
+        DeleteConfirmDialog(
+            message = "",
+            ok = {
+                onDelete(indication.id)  // Perform the delete action
+                showDialog = false // Close the dialog after deletion
+            }, cancel = { showDialog = false })
     }
 }
 
@@ -298,7 +365,7 @@ fun ExposedMedicationDropdown(
     // Texto que se muestra en el TextField
     val selectedMedicationText by derivedStateOf {
         val med = medications.find { it.id == selectedMedicationId }
-        med?.let { it.name } ?: "Seleccione un medicamento"
+        med?.name ?: "Seleccione un medicamento"
     }
 
     ExposedDropdownMenuBox(

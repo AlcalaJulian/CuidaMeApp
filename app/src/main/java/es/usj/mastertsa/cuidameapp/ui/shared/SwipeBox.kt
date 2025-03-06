@@ -4,6 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Edit
@@ -17,8 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun SwipeBox(
@@ -32,25 +35,27 @@ fun SwipeBox(
     lateinit var icon: ImageVector
     lateinit var alignment: Alignment
     val color: Color
+    var textColor: Color = Color.Black
 
     when (swipeState.dismissDirection) {
         SwipeToDismissBoxValue.EndToStart -> {
             icon = Icons.Outlined.Delete
             alignment = Alignment.CenterEnd
-            color = MaterialTheme.colorScheme.errorContainer
+            color = MaterialTheme.colorScheme.error
         }
 
         SwipeToDismissBoxValue.StartToEnd -> {
             icon = Icons.Outlined.Edit
             alignment = Alignment.CenterStart
-            color =
-                Color.Green.copy(alpha = 0.3f) // You can generate theme for successContainer in themeBuilder
+            color = Color.Yellow.copy(alpha = 0.3f)
+            textColor = Color.Black
         }
 
         SwipeToDismissBoxValue.Settled -> {
             icon = Icons.Outlined.Delete
             alignment = Alignment.CenterEnd
             color = MaterialTheme.colorScheme.errorContainer
+            textColor = Color.White
         }
     }
 
@@ -62,11 +67,15 @@ fun SwipeBox(
                 contentAlignment = alignment,
                 modifier = Modifier
                     .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp))
                     .background(color)
             ) {
                 Icon(
-                    modifier = Modifier.minimumInteractiveComponentSize(),
-                    imageVector = icon, contentDescription = null
+                    modifier = Modifier
+                        .minimumInteractiveComponentSize(),
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = textColor
                 )
             }
         }
