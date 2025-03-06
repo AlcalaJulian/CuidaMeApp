@@ -37,7 +37,8 @@ fun MedicationAddScreen(
             LocalContext.current
         )
     ),
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onSuccess: () -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
@@ -88,7 +89,7 @@ fun MedicationAddScreen(
                                         administrationType = administrationType.toInt()
                                     )
                                 )
-                                onDismiss()
+                                onSuccess()
                             }
                         }
                     ) {

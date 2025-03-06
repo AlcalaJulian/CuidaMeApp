@@ -18,7 +18,7 @@ import es.usj.mastertsa.cuidameapp.ui.navigation.MedicationDetail
 import kotlinx.coroutines.launch
 
 class MedicationDetailViewModel(
-    private val savedState: SavedStateHandle,
+    savedState: SavedStateHandle,
     private val useCase: GetMedicationByIdUseCase
 ): ViewModel() {
 var uiState by mutableStateOf(MedicationDetailUiState())
@@ -27,7 +27,7 @@ var uiState by mutableStateOf(MedicationDetailUiState())
     val id = savedState.toRoute<MedicationDetail>().id
 
     init {
-            getMedicamentById(id)
+        getMedicamentById(id)
     }
 
     private fun getMedicamentById(id: Long){

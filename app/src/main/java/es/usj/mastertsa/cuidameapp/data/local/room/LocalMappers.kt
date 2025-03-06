@@ -1,5 +1,6 @@
 package es.usj.mastertsa.cuidameapp.data.local.mappers
 
+import es.usj.mastertsa.cuidameapp.data.local.room.indication.IndicationDetailView
 import es.usj.mastertsa.cuidameapp.data.local.room.indication.IndicationEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.medication.MedicationEntity
@@ -110,13 +111,15 @@ fun MedicationDetail.toMedicationEntity() = MedicationEntity(
         administrationType = this.administrationType
     )
 
-fun IndicationEntity.toIndicationDetail() =  IndicationDetail(
+fun IndicationDetailView.toIndicationDetail() =  IndicationDetail(
         id = this.id,
          medicationId = this.medicationId,
         recurrenceId = this.recurrenceId,
         startDate = this.startDate,
         dosage = this.dosage,
-        patientId = this.patientId
+        patientId = this.patientId,
+        patientName = this.patientName,
+        medicationName = this.medicationName
     )
 
 fun IndicationDetail.toIndicationEntity() = IndicationEntity(

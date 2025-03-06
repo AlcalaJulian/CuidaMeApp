@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import androidx.room.Delete
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,8 +16,11 @@ interface IndicationDao {
     @Query("SELECT * FROM IndicationRoom WHERE id = :id")
     suspend fun getIndicationById(id: Long): IndicationEntity
 
-    @Query("SELECT * FROM IndicationRoom WHERE patientId = :id")
-    suspend fun getIndicationByPatientId(id: Long): List<IndicationEntity>
+    @Query("SELECT * FROM IndicationDetailView WHERE id = :id")
+    suspend fun getIndicationDetailById(id: Long): IndicationDetailView
+
+    @Query("SELECT * FROM IndicationDetailView WHERE patientId = :id")
+    suspend fun getIndicationByPatientId(id: Long): List<IndicationDetailView>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertIndication(indication: IndicationEntity)
@@ -35,8 +37,8 @@ interface IndicationDao {
     @Query("DELETE FROM IndicationRoom")
     suspend fun deleteAllIndications()
 
-    @Query("SELECT * FROM IndicationRoom WHERE medicationId = :medicationId")
-    fun getIndicationsByMedicationId(medicationId: Long): Flow<List<IndicationEntity>>
+    @Query("SELECT * FROM IndicationDetailView WHERE medicationId = :medicationId")
+    fun getIndicationsByMedicationId(medicationId: Long): Flow<List<IndicationDetailView>>
 
     @Query("SELECT COUNT(*) FROM IndicationRoom")
     suspend fun getIndicationsCount(): Int

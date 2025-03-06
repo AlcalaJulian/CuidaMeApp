@@ -23,15 +23,14 @@ class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepos
     }
 
     override suspend fun getIndicationById(id: Long): IndicationDetail {
-        return db.getIndicationDao().getIndicationById(id).toIndicationDetail()
+        return db.getIndicationDao().getIndicationDetailById(id).toIndicationDetail()
 
     }
 
     override suspend fun getIndicationsByPatientId(id: Long): List<IndicationDetail> {
-        val indicationEntities = db.getIndicationDao().getIndicationByPatientId(id).map{
+        return db.getIndicationDao().getIndicationByPatientId(id).map{
             it.toIndicationDetail()
         }
-        return indicationEntities
     }
 
 

@@ -1,12 +1,35 @@
 package es.usj.mastertsa.cuidameapp.ui.indication.list
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -14,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.medication.Medication
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
+import es.usj.mastertsa.cuidameapp.ui.shared.ListTopBar
 
 @Composable
 fun IndicationListScreen(
@@ -30,56 +54,63 @@ fun IndicationListScreen(
         viewModel.getAllIndications()
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        when {
-            uiState.loading -> {
-                CircularProgressIndicator()
-            }
-            uiState.error != null -> {
-                Text(text = "Error: ${uiState.error}")
-            }
-            else -> {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    Text(text = "Listado de indicaciones")
+    Scaffold(
+        topBar = { ListTopBar("Lista de indicaciones") { showAddIndicationDialog = true } }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            when {
+                uiState.loading -> {
+                    CircularProgressIndicator()
+                }
 
-                    if (uiState.data.isNotEmpty()) {
-                        LazyColumn(modifier = Modifier.weight(1f)) {
-                            items(uiState.data) { indication ->
-                                Text(
-                                    text = "• Indicación ID: ${indication.id} " +
-                                            "MedicamentoID: ${indication.medicationId}, " +
-                                            "Inicio: ${indication.startDate}"
-                                )
-                            }
-                        }
-                    } else {
-                        Text(text = "No hay indicaciones registradas.")
-                    }
+                uiState.error != null -> {
+                    Text(text = "Error: ${uiState.error}")
+                }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Botón que abre el diálogo de agregar indicación
-                    Button(
-                        onClick = {
-                            // Cargamos lista de pacientes y medicamentos
-                            viewModel.getAllPatients()
-                            viewModel.getAllMedications()
-                            // Mostramos el diálogo
-                            showAddIndicationDialog = true
-                        }
+                else -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
                     ) {
-                        Text(text = "Agregar Indicación")
-                    }
 
-                    if (uiState.success) {
-                        Text(text = "¡Indicación agregada con éxito!")
+                        if (uiState.data.isNotEmpty()) {
+                            LazyColumn(modifier = Modifier.weight(1f)) {
+                                items(uiState.data) { indication ->
+                                    Text(
+                                        text = "• Indicación ID: ${indication.id} " +
+                                                "MedicamentoID: ${indication.medicationId}, " +
+                                                "Inicio: ${indication.startDate}",
+                                        modifier = Modifier.clickable { navigateToDetail(indication.id) }
+                                    )
+                                }
+                            }
+                        } else {
+                            Text(text = "No hay indicaciones registradas.")
+                        }
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        // Botón que abre el diálogo de agregar indicación
+                        Button(
+                            onClick = {
+                                // Cargamos lista de pacientes y medicamentos
+                                viewModel.getAllPatients()
+                                viewModel.getAllMedications()
+                                // Mostramos el diálogo
+                                showAddIndicationDialog = true
+                            }
+                        ) {
+                            Text(text = "Agregar Indicación")
+                        }
+
+                        if (uiState.success) {
+                            Text(text = "¡Indicación agregada con éxito!")
+                        }
                     }
                 }
             }

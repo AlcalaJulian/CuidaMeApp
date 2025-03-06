@@ -29,6 +29,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import es.usj.mastertsa.cuidameapp.ui.shared.ErrorText
+import es.usj.mastertsa.cuidameapp.ui.shared.LoadingIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,26 +94,6 @@ fun PatientListTopBar(context: Context) {
         AddPatientDialog(onDismiss = { showDialog = false }, viewModel = viewModel)
     }
 }
-
-
-@Composable
-fun LoadingIndicator() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-    }
-}
-
-
-@Composable
-fun ErrorText(message: String) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(text = "Error: $message")
-    }
-}
-
 
 @Composable
 fun PatientList(

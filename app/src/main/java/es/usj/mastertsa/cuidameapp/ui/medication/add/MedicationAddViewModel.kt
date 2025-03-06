@@ -27,8 +27,6 @@ class MedicationAddViewModel(private val useCase: AddMedicationUseCase): ViewMod
                 uiState = uiState.copy(loading = false, error = ex.message)
             }
         }
-
-
     }
 
     companion object{

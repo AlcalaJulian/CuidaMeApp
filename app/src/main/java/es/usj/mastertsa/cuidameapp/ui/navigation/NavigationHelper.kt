@@ -25,10 +25,10 @@ fun NavigationHelper(navController: NavHostController, modifier: Modifier = Modi
                 PatientListScreen ( { id -> navController.navigate( PatientDetail(id = id)) })
             }
             composable<PatientDetail> {
-                PatientDetailScreen(){ navController.popBackStack()}
+                PatientDetailScreen{ navController.popBackStack()}
             }
             composable<IndicationDetail> {
-                IndicationDetailScreen()
+                IndicationDetailScreen{ navController.popBackStack()}
             }
             composable<IndicationList> {
                 IndicationListScreen { id -> navController.navigate(IndicationDetail(id = id)) }
