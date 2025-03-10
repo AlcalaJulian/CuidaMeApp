@@ -26,6 +26,15 @@ object PatientList
 @Serializable
 data class PatientDetail(val id: Long)
 
+@Serializable
+object Authentication
+
+@Serializable
+object Login
+
+@Serializable
+object Register
+
 sealed class Screens{
     companion object{
         val navRoutes = listOf(

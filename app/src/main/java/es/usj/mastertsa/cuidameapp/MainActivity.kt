@@ -12,38 +12,47 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.rememberNavController
+import es.usj.mastertsa.cuidameapp.ui.auth.AuthViewModel
 import es.usj.mastertsa.cuidameapp.ui.navigation.NavigationBottomBar
 import es.usj.mastertsa.cuidameapp.ui.navigation.NavigationHelper
 import es.usj.mastertsa.cuidameapp.ui.theme.CuidaMeAppTheme
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             CuidaMeAppTheme {
                 val navController = rememberNavController()
-                val snackbarHostState = remember { SnackbarHostState() }
+                val snackBarHostState = remember { SnackbarHostState() }
+                val authViewModel: AuthViewModel = viewModel(factory = AuthViewModel.factory(
+                    LocalContext.current))
 
                 Scaffold(
-                    snackbarHost = { SnackbarHost(snackbarHostState) },
+                    snackbarHost = { SnackbarHost(snackBarHostState) },
+
                     bottomBar = {
-                        NavigationBottomBar(navController, onClickRoute = { route ->
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    inclusive = false
-                                    saveState = true
+                        if (authViewModel.user != null){
+                            NavigationBottomBar(navController, onClickRoute = { route ->
+                                navController.navigate(route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        inclusive = false
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        })
+                            })
+                        }
                     }
                 ) { paddingValues ->
-                    NavigationHelper(navController = navController, modifier = Modifier.padding(paddingValues))
+                    NavigationHelper(navController = navController, authViewModel, modifier = Modifier.padding(paddingValues))
                 }
             }
         }

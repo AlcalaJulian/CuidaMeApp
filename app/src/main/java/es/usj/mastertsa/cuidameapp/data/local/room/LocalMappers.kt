@@ -4,6 +4,8 @@ import es.usj.mastertsa.cuidameapp.data.local.room.indication.IndicationDetailVi
 import es.usj.mastertsa.cuidameapp.data.local.room.indication.IndicationEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.medication.MedicationEntity
+import es.usj.mastertsa.cuidameapp.data.local.room.user.UserEntity
+import es.usj.mastertsa.cuidameapp.domain.auth.User
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
 import es.usj.mastertsa.cuidameapp.domain.medication.Medication
@@ -130,3 +132,9 @@ fun IndicationDetail.toIndicationEntity() = IndicationEntity(
         dosage = this.dosage,
         patientId = this.patientId
     )
+
+fun UserEntity.toDomain() = User(
+    id = id,
+    name = firstName,
+    lastName = lastName
+)

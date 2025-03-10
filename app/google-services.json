@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "185146225737",
+    "project_id": "alu182038",
+    "storage_bucket": "alu182038.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:185146225737:android:831e0704f38e4779017b98",
+        "android_client_info": {
+          "package_name": "es.usj.mastertsa.cuidameapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAyRw8f4iho07lmWivqV_3BmbpGkf9HTeo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
