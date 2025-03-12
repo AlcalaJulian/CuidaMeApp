@@ -1,4 +1,4 @@
-package es.usj.mastertsa.cuidameapp.ui.medication.detail
+package es.usj.mastertsa.cuidameapp.ui.medicine.detail
 
 import android.content.Context
 import androidx.compose.runtime.getValue
@@ -12,19 +12,19 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.navigation.toRoute
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
-import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
-import es.usj.mastertsa.cuidameapp.domain.medication.GetMedicationByIdUseCase
-import es.usj.mastertsa.cuidameapp.ui.navigation.MedicationDetail
+import es.usj.mastertsa.cuidameapp.data.repository.MedicineRepositoryImpl
+import es.usj.mastertsa.cuidameapp.domain.medicine.GetMedicineByIdUseCase
+import es.usj.mastertsa.cuidameapp.ui.navigation.MedicineDetail
 import kotlinx.coroutines.launch
 
-class MedicationDetailViewModel(
+class MedicineDetailViewModel(
     savedState: SavedStateHandle,
-    private val useCase: GetMedicationByIdUseCase
+    private val useCase: GetMedicineByIdUseCase
 ): ViewModel() {
-var uiState by mutableStateOf(MedicationDetailUiState())
+var uiState by mutableStateOf(MedicineDetailUiState())
     private set
 
-    val id = savedState.toRoute<MedicationDetail>().id
+    val id = savedState.toRoute<MedicineDetail>().id
 
     init {
         getMedicamentById(id)
@@ -47,10 +47,10 @@ var uiState by mutableStateOf(MedicationDetailUiState())
         fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
 
-                val repo = MedicationRepositoryImpl(PatientDatabase.provideDatabase(context))
-                val useCase = GetMedicationByIdUseCase(repo)
+                val repo = MedicineRepositoryImpl(PatientDatabase.provideDatabase(context))
+                val useCase = GetMedicineByIdUseCase(repo)
                 val savedStateHandle = extras.createSavedStateHandle()
-                return MedicationDetailViewModel(savedStateHandle, useCase) as T
+                return MedicineDetailViewModel(savedStateHandle, useCase) as T
             }
         }
     }

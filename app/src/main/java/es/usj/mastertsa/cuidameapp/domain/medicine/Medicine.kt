@@ -1,7 +1,7 @@
-package es.usj.mastertsa.cuidameapp.domain.medication
+package es.usj.mastertsa.cuidameapp.domain.medicine
 
 
-data class Medication (
+data class Medicine (
     val id: Long,
     val name: String,
     val description: String,

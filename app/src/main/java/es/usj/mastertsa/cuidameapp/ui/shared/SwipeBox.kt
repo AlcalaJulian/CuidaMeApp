@@ -4,6 +4,8 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -35,7 +37,6 @@ fun SwipeBox(
     lateinit var icon: ImageVector
     lateinit var alignment: Alignment
     val color: Color
-    var textColor: Color = Color.Black
 
     when (swipeState.dismissDirection) {
         SwipeToDismissBoxValue.EndToStart -> {
@@ -47,15 +48,13 @@ fun SwipeBox(
         SwipeToDismissBoxValue.StartToEnd -> {
             icon = Icons.Outlined.Edit
             alignment = Alignment.CenterStart
-            color = Color.Yellow.copy(alpha = 0.3f)
-            textColor = Color.Black
+            color = Color.Yellow
         }
 
         SwipeToDismissBoxValue.Settled -> {
             icon = Icons.Outlined.Delete
             alignment = Alignment.CenterEnd
-            color = MaterialTheme.colorScheme.errorContainer
-            textColor = Color.White
+            color =Color.Red
         }
     }
 
@@ -72,10 +71,14 @@ fun SwipeBox(
             ) {
                 Icon(
                     modifier = Modifier
+                        .padding(8.dp)
+                        .clip(shape = CircleShape)
+
+                        .background(Color.Black)
                         .minimumInteractiveComponentSize(),
                     imageVector = icon,
                     contentDescription = null,
-                    tint = textColor
+                    tint = Color.White
                 )
             }
         }

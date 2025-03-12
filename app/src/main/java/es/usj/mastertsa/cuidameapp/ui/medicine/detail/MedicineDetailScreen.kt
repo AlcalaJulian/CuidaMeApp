@@ -1,4 +1,4 @@
-package es.usj.mastertsa.cuidameapp.ui.medication.detail
+package es.usj.mastertsa.cuidameapp.ui.medicine.detail
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,14 +13,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import es.usj.mastertsa.cuidameapp.domain.medication.MedicationDetail
+import es.usj.mastertsa.cuidameapp.domain.medicine.MedicineDetail
 import es.usj.mastertsa.cuidameapp.ui.shared.DetailTopBar
 import es.usj.mastertsa.cuidameapp.ui.shared.ErrorText
 import es.usj.mastertsa.cuidameapp.ui.shared.LoadingIndicator
 
 @Composable
-fun MedicationDetailScreen(
-    viewModel: MedicationDetailViewModel = viewModel(factory = MedicationDetailViewModel.factory(
+fun MedicineDetailScreen(
+    viewModel: MedicineDetailViewModel = viewModel(factory = MedicineDetailViewModel.factory(
         LocalContext.current)),
     navigateBack:()-> Unit
 ){
@@ -42,7 +42,7 @@ fun MedicationDetailScreen(
                     ErrorText(message = uiState.error)
                 }
                 else -> {
-                    uiState.data?.let { MedicationDetailContent(it) }
+                    uiState.data?.let { MedicineDetailContent(it) }
                 }
             }
         }
@@ -50,7 +50,7 @@ fun MedicationDetailScreen(
 }
 
 @Composable
-fun MedicationDetailContent(medication: MedicationDetail) {
+fun MedicineDetailContent(medication: MedicineDetail) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
 
         Text(text = "Name: ${medication.name}", style = androidx.compose.material3.MaterialTheme.typography.bodyLarge)

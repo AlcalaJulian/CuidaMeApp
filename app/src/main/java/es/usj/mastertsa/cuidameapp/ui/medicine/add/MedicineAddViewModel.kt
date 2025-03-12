@@ -1,4 +1,4 @@
-package es.usj.mastertsa.cuidameapp.ui.medication.add
+package es.usj.mastertsa.cuidameapp.ui.medicine.add
 
 import android.content.Context
 import androidx.compose.runtime.getValue
@@ -8,18 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
-import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
-import es.usj.mastertsa.cuidameapp.domain.medication.AddMedicationUseCase
-import es.usj.mastertsa.cuidameapp.domain.medication.Medication
-import es.usj.mastertsa.cuidameapp.ui.medication.list.MedicationListViewModel
+import es.usj.mastertsa.cuidameapp.data.repository.MedicineRepositoryImpl
+import es.usj.mastertsa.cuidameapp.domain.medicine.AddMedicineUseCase
+import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
 import kotlinx.coroutines.launch
 
-class MedicationAddViewModel(private val useCase: AddMedicationUseCase): ViewModel() {
+class MedicineAddViewModel(private val useCase: AddMedicineUseCase): ViewModel() {
 
-    var uiState by mutableStateOf(MedicationAddUiState())
+    var uiState by mutableStateOf(MedicineAddUiState())
         private set
 
-     fun addMedication(medication: Medication){
+     fun addMedication(medication: Medicine){
         viewModelScope.launch {
             try {
                 useCase.execute(medication)
@@ -33,9 +32,9 @@ class MedicationAddViewModel(private val useCase: AddMedicationUseCase): ViewMod
         fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-                val repo = MedicationRepositoryImpl(PatientDatabase.provideDatabase(context))
-                val useCase = AddMedicationUseCase(repo)
-                return MedicationAddViewModel(useCase) as T
+                val repo = MedicineRepositoryImpl(PatientDatabase.provideDatabase(context))
+                val useCase = AddMedicineUseCase(repo)
+                return MedicineAddViewModel(useCase) as T
             }
         }
     }

@@ -1,4 +1,4 @@
-package es.usj.mastertsa.cuidameapp.ui.medication.list
+package es.usj.mastertsa.cuidameapp.ui.medicine.list
 
 import android.content.Context
 import androidx.compose.runtime.getValue
@@ -8,17 +8,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
-import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
-import es.usj.mastertsa.cuidameapp.domain.medication.DeleteMedicationUseCase
-import es.usj.mastertsa.cuidameapp.domain.medication.GetAllMedicationsUseCase
+import es.usj.mastertsa.cuidameapp.data.repository.MedicineRepositoryImpl
+import es.usj.mastertsa.cuidameapp.domain.medicine.DeleteMedicineUseCase
+import es.usj.mastertsa.cuidameapp.domain.medicine.GetAllMedicinesUseCase
 import kotlinx.coroutines.launch
 
-class MedicationListViewModel(
-    private val useCase: GetAllMedicationsUseCase,
-    private val deleteUseCase: DeleteMedicationUseCase
+class MedicineListViewModel(
+    private val useCase: GetAllMedicinesUseCase,
+    private val deleteUseCase: DeleteMedicineUseCase
 ): ViewModel() {
 
-    var uiState by mutableStateOf(MedicationListUiState())
+    var uiState by mutableStateOf(MedicineListUiState())
         private set
 
 
@@ -49,10 +49,10 @@ class MedicationListViewModel(
         fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
 
-                val repo = MedicationRepositoryImpl(PatientDatabase.provideDatabase(context))
-                val getAllUseCase = GetAllMedicationsUseCase(repo)
-                val deleteUseCase = DeleteMedicationUseCase(repo)
-                return MedicationListViewModel(getAllUseCase, deleteUseCase) as T
+                val repo = MedicineRepositoryImpl(PatientDatabase.provideDatabase(context))
+                val getAllUseCase = GetAllMedicinesUseCase(repo)
+                val deleteUseCase = DeleteMedicineUseCase(repo)
+                return MedicineListViewModel(getAllUseCase, deleteUseCase) as T
             }
         }
 

@@ -1,21 +1,39 @@
 package es.usj.mastertsa.cuidameapp.ui.patient.list
 
-import androidx.compose.foundation.layout.*
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
-import androidx.compose.material3.*
-import androidx.compose.ui.window.Dialog
+import es.usj.mastertsa.cuidameapp.ui.shared.DatePickerField
+import java.time.LocalDate
 
 
+@SuppressLint("NewApi")
 @Composable
 fun AddPatientDialog(
     onDismiss: () -> Unit,
@@ -54,7 +72,14 @@ fun AddPatientDialog(
                 )
                 PatientTextField(label = "Nombre", value = firstName, onValueChange = { firstName = it })
                 PatientTextField(label = "Apellido", value = lastName, onValueChange = { lastName = it })
-                PatientTextField(label = "Fecha de Nacimiento (YYYY-MM-DD)", value = birthDate, onValueChange = { birthDate = it })
+                //PatientTextField(label = "Fecha de Nacimiento (YYYY-MM-DD)", value = birthDate, onValueChange = { birthDate = it })
+                DatePickerField(
+                    birthDate,
+                    maxDate = LocalDate.now(),
+                    label = "Fecha de Nacimiento",
+                ) {
+                    birthDate = it
+                }
                 PatientTextField(label = "Contacto de Emergencia", value = emergencyContact, onValueChange = { emergencyContact = it })
 
                 Spacer(modifier = Modifier.height(16.dp))

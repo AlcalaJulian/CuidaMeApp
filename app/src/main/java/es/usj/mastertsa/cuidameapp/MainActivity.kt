@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = { SnackbarHost(snackBarHostState) },
 
                     bottomBar = {
-                        if (authViewModel.user != null){
+                        //if (authViewModel.user != null){
                             NavigationBottomBar(navController, onClickRoute = { route ->
                                 navController.navigate(route) {
                                     popUpTo(navController.graph.findStartDestination().id) {
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                                     restoreState = true
                                 }
                             })
-                        }
+                        //}
                     }
                 ) { paddingValues ->
                     NavigationHelper(navController = navController, authViewModel, modifier = Modifier.padding(paddingValues))

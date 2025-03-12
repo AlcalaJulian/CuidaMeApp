@@ -14,7 +14,7 @@ import androidx.navigation.toRoute
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.IndicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.indication.GetIndicationByIdUseCase
-import es.usj.mastertsa.cuidameapp.ui.navigation.MedicationDetail
+import es.usj.mastertsa.cuidameapp.ui.navigation.MedicineDetail
 import kotlinx.coroutines.launch
 
 class IndicationDetailViewModel(
@@ -24,7 +24,7 @@ class IndicationDetailViewModel(
     var uiState by mutableStateOf(IndicationDetailUiState())
         private set
 
-    val id = saveHandle.toRoute<MedicationDetail>().id
+    val id = saveHandle.toRoute<MedicineDetail>().id
 
     init {
         getIndicationById(id)

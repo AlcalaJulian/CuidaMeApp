@@ -1,43 +1,35 @@
-package es.usj.mastertsa.cuidameapp.ui.medication.list
+package es.usj.mastertsa.cuidameapp.ui.medicine.list
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.wear.compose.material.ExperimentalWearMaterialApi
-import androidx.wear.compose.material.FractionalThreshold
-import es.usj.mastertsa.cuidameapp.domain.medication.Medication
-import es.usj.mastertsa.cuidameapp.ui.medication.add.MedicationAddScreen
+import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
+import es.usj.mastertsa.cuidameapp.ui.medicine.add.MedicationAddScreen
 import es.usj.mastertsa.cuidameapp.ui.shared.ErrorText
 import es.usj.mastertsa.cuidameapp.ui.shared.ListTopBar
 import es.usj.mastertsa.cuidameapp.ui.shared.LoadingIndicator
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxValue
 
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import es.usj.mastertsa.cuidameapp.ui.shared.DeleteConfirmDialog
 import es.usj.mastertsa.cuidameapp.ui.shared.SwipeBox
 
 @Composable
-fun MedicationListScreen(
-    viewModel: MedicationListViewModel = viewModel(factory = MedicationListViewModel.factory(
+fun MedicineListScreen(
+    viewModel: MedicineListViewModel = viewModel(factory = MedicineListViewModel.factory(
         LocalContext.current)),
     navigateToDetail:(id: Long) -> Unit
 ){
@@ -65,13 +57,34 @@ fun MedicationListScreen(
                     ErrorText(message = uiState.error)
                 }
                 else -> {
-                    MedicationList(
-                        medications = uiState.data,
-                        navigateToDetail = navigateToDetail,
-                        onDelete = { id ->
-                            viewModel.deleteMedication(id)
+                    if (uiState.data.isEmpty()){
+                        Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp)
+                        ) {
+                            Text(text = "No hay medicamentos registrados.")
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            Button(
+                                onClick = {
+                                    showDialog = true
+                                }
+                            ) {
+                                Text(text = "Agregar medicina")
+                            }
                         }
-                    )
+
+                    }else{
+                        MedicineList(
+                            medications = uiState.data,
+                            navigateToDetail = navigateToDetail,
+                            onDelete = { id ->
+                                viewModel.deleteMedication(id)
+                            }
+                        )
+                    }
+
                     if (showDialog) {
                         MedicationAddScreen(onDismiss = { showDialog = false }, onSuccess = {
                             viewModel.getAllMedications()
@@ -86,8 +99,8 @@ fun MedicationListScreen(
 
 
 @Composable
-fun MedicationList(
-    medications: List<Medication>,
+fun MedicineList(
+    medications: List<Medicine>,
     navigateToDetail: (id: Long) -> Unit,
     onDelete: (Long) -> Unit
 ) {
@@ -111,7 +124,7 @@ fun MedicationList(
 
 @Composable
 fun MedicationItem(
-    medication: Medication,
+    medication: Medicine,
     onClick: () -> Unit,
     onDelete: (Long) -> Unit
 ) {

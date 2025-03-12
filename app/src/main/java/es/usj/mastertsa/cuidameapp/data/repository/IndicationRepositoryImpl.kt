@@ -1,19 +1,11 @@
 package es.usj.mastertsa.cuidameapp.data.repository
 
-import es.usj.mastertsa.cuidameapp.data.local.mappers.toDomain
 import es.usj.mastertsa.cuidameapp.data.local.mappers.toEntity
 import es.usj.mastertsa.cuidameapp.data.local.mappers.toIndicationDetail
-import es.usj.mastertsa.cuidameapp.data.local.mappers.toMedicationDetail
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.domain.IndicationRepository
-import es.usj.mastertsa.cuidameapp.domain.MedicationRepository
-import es.usj.mastertsa.cuidameapp.domain.PatientRepository
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
-import es.usj.mastertsa.cuidameapp.domain.medication.Medication
-import es.usj.mastertsa.cuidameapp.domain.medication.MedicationDetail
-import es.usj.mastertsa.cuidameapp.domain.patient.Patient
-import es.usj.mastertsa.cuidameapp.domain.patient.PatientDetail
 import kotlinx.coroutines.flow.first
 
 class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepository {

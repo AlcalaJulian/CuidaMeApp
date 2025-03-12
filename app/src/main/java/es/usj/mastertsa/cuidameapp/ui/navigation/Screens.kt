@@ -9,10 +9,10 @@ import kotlinx.serialization.Serializable
 data class TopLevelRoute<T : Any>(val name: String, val route: T, val icon: ImageVector)
 
 @Serializable
-object MedicationList
+object MedicineList
 
 @Serializable
-data class MedicationDetail(val id: Long)
+data class MedicineDetail(val id: Long)
 
 @Serializable
 object IndicationList
@@ -40,7 +40,7 @@ sealed class Screens{
         val navRoutes = listOf(
             TopLevelRoute("Patients", PatientList, Icons.Filled.Favorite),
             TopLevelRoute("Indications", IndicationList, Icons.TwoTone.Person),
-            TopLevelRoute("Medications", MedicationList, Icons.TwoTone.Person)
+            TopLevelRoute("Medicine", MedicineList, Icons.TwoTone.Person)
         )
     }
 }

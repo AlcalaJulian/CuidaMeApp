@@ -1,10 +1,10 @@
-package es.usj.mastertsa.cuidameapp.data.local.room.medication
+package es.usj.mastertsa.cuidameapp.data.local.room.medicine
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "MedicationRoom")
-data class MedicationEntity(
+data class MedicineEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
     val description: String,

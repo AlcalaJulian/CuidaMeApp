@@ -28,7 +28,5 @@ class PatientRepositoryImpl(private val db: PatientDatabase): PatientRepository 
 
     override suspend fun addPatient(patient: Patient) {
         db.getPatientDao().insertPatient(patient.toEntity())
-
     }
-
 }

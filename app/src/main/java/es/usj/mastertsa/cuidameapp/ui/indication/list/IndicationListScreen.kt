@@ -12,39 +12,42 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import es.usj.mastertsa.cuidameapp.domain.indication.Dosage
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
-import es.usj.mastertsa.cuidameapp.domain.medication.Medication
+import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
+import es.usj.mastertsa.cuidameapp.ui.indication.add.DosageRow
+import es.usj.mastertsa.cuidameapp.ui.shared.CustomDropdown
+import es.usj.mastertsa.cuidameapp.ui.shared.DatePickerField
 import es.usj.mastertsa.cuidameapp.ui.shared.DeleteConfirmDialog
 import es.usj.mastertsa.cuidameapp.ui.shared.ListTopBar
 import es.usj.mastertsa.cuidameapp.ui.shared.SwipeBox
+import es.usj.mastertsa.cuidameapp.ui.shared.TimePickerField
+import java.time.LocalDate
 
 @Composable
 fun IndicationListScreen(
@@ -87,12 +90,7 @@ fun IndicationListScreen(
                         if (uiState.data.isNotEmpty()) {
                             LazyColumn(modifier = Modifier.weight(1f)) {
                                 items(uiState.data) { indication ->
-//                                    Text(
-//                                        text = "• Indicación ID: ${indication.id} " +
-//                                                "MedicamentoID: ${indication.medicationId}, " +
-//                                                "Inicio: ${indication.startDate}",
-//                                        modifier = Modifier.clickable { navigateToDetail(indication.id) }
-//                                    )
+
                                     IndicationItem(
                                         indication,
                                         onClick = { navigateToDetail(indication.id) },
@@ -102,25 +100,23 @@ fun IndicationListScreen(
                             }
                         } else {
                             Text(text = "No hay indicaciones registradas.")
-                        }
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = {
 
-                        // Botón que abre el diálogo de agregar indicación
-                        Button(
-                            onClick = {
-                                // Cargamos lista de pacientes y medicamentos
-                                viewModel.getAllPatients()
-                                viewModel.getAllMedications()
-                                // Mostramos el diálogo
-                                showAddIndicationDialog = true
+                                    viewModel.getAllPatients()
+                                    viewModel.getAllMedications()
+
+                                    showAddIndicationDialog = true
+                                }
+                            ) {
+                                Text(text = "Agregar Indicación")
                             }
-                        ) {
-                            Text(text = "Agregar Indicación")
-                        }
 
-                        if (uiState.success) {
-                            Text(text = "¡Indicación agregada con éxito!")
+                            if (uiState.success) {
+                                Text(text = "¡Indicación agregada con éxito!")
+                            }
                         }
                     }
                 }
@@ -131,8 +127,8 @@ fun IndicationListScreen(
     if (showAddIndicationDialog) {
         AddIndicationDialog(
             onDismiss = { showAddIndicationDialog = false },
-            onConfirm = { newIndication ->
-                viewModel.addPatient(newIndication)
+            onConfirm = { newIndication, dosages ->
+                viewModel.addIndicationAndRecurrences(newIndication, dosages)
                 showAddIndicationDialog = false
             },
             patients = uiState.patientList,
@@ -176,7 +172,7 @@ fun IndicationItem(
                         maxLines = 1,
                         style = MaterialTheme.typography.bodyLarge
                     )
-                    Text(text = indication.medicationName, style = MaterialTheme.typography.bodySmall)
+                    Text(text = indication.medicineName, style = MaterialTheme.typography.bodySmall)
                 }
                 Text(
                     text = indication.startDate,
@@ -198,12 +194,13 @@ fun IndicationItem(
     }
 }
 
+@SuppressLint("NewApi")
 @Composable
 fun AddIndicationDialog(
     onDismiss: () -> Unit,
-    onConfirm: (Indication) -> Unit,
+    onConfirm: (Indication, List<Dosage>) -> Unit,
     patients: List<Patient>,
-    medications: List<Medication>
+    medications: List<Medicine>
 ) {
     var selectedPatientId by remember { mutableStateOf<Long?>(null) }
     var selectedMedicationId by remember { mutableStateOf<Long?>(null) }
@@ -212,11 +209,31 @@ fun AddIndicationDialog(
     var expandedMedication by remember { mutableStateOf(false) }
 
     var recurrenceId by remember { mutableStateOf("") }
+    var quantity by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf("") }
-    var dosage by remember { mutableStateOf("") }
+    val recurrenceOptions = listOf("Every 4 hours", "Every day", "Weekly")
+    var expandedRecurrence by remember { mutableStateOf(false) }
+
+    var dosages by remember { mutableStateOf(listOf<Dosage>()) }
+    var selectedDosage by remember { mutableStateOf<Dosage?>(null) }
+
+
+    // Function to add a new dosage entry to the list
+    fun addDosage(dosage: Dosage) {
+        dosages = if (selectedDosage == null) {
+            dosages + dosage // Add a new dosage entry with empty fields
+        }else{
+            dosages.map {
+                if (it.id == selectedDosage?.id) dosage else it
+            }
+        }
+    }
 
     AlertDialog(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {
+            onDismiss()
+            dosages = listOf()
+                           },
         confirmButton = {
             TextButton(
                 onClick = {
@@ -225,188 +242,201 @@ fun AddIndicationDialog(
                     val indication = Indication(
                         id = 0L,
                         patientId = selectedPatientId ?: 0L,
-                        medicationId = medicationAsInt,
+                        medicineId = medicationAsInt,
                         recurrenceId = recurrenceId,
                         startDate = startDate,
-                        dosage = dosage.toIntOrNull() ?: 0
+                        dosage = dosages.size
                     )
-                    onConfirm(indication)
+                    onConfirm(indication, dosages)
                 }
             ) {
                 Text("Agregar")
             }
         },
         dismissButton = {
-            TextButton(onClick = { onDismiss() }) {
-                Text("Cancelar")
+            TextButton(onClick = {
+                onDismiss()
+                dosages = listOf()
+            }) {
+                Text("Cancelar", color = Color.Red)
             }
         },
         title = { Text("Agregar Indicación") },
         text = {
             Column {
-                // Dropdown para Pacientes
-                ExposedPatientDropdown(
-                    patients = patients,
-                    selectedPatientId = selectedPatientId,
-                    onPatientSelected = { selectedPatientId = it },
+
+                CustomDropdown(
+                    items = patients,
+                    selectedItem = patients.find { it.id == selectedPatientId },
+                    label = "Paciente",
+                    onItemSelected = { selectedPatientId = it.id  },
                     expanded = expandedPatient,
-                    onExpandedChange = { expandedPatient = it }
+                    onExpandedChange = { expandedPatient = it },
+                    itemLabel = { "${it.firstName} ${it.lastName}" },
+                    noItemsText = "No hay pacientes en la base de datos"
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Dropdown para Medicamentos
-                ExposedMedicationDropdown(
-                    medications = medications,
-                    selectedMedicationId = selectedMedicationId,
-                    onMedicationSelected = { selectedMedicationId = it },
+                CustomDropdown(
+                    items = medications,
+                    selectedItem = medications.find { it.id == selectedMedicationId },
+                    label = "Medicamento",
+                    onItemSelected = { selectedMedicationId = it.id },
                     expanded = expandedMedication,
-                    onExpandedChange = { expandedMedication = it }
+                    onExpandedChange = { expandedMedication = it},
+                    itemLabel = { it.name ?: "" },
+                    noItemsText = "No hay medicamentos disponibles"
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                CustomDropdown(
+                    items = recurrenceOptions,
+                    selectedItem = recurrenceOptions.find { it == recurrenceId },
+                    label = "Recurrencia",
+                    onItemSelected = { recurrenceId = it },
+                    expanded = expandedRecurrence,
+                    onExpandedChange = { expandedRecurrence = it},
+                    itemLabel = { it ?: "" },
+                    noItemsText = "No hay recurrencias disponibles"
+                )
+
                 OutlinedTextField(
-                    value = recurrenceId,
-                    onValueChange = { recurrenceId = it },
-                    label = { Text("Recurrencia") },
+                    value = quantity,
+                    onValueChange = { quantity = it },
+                    label = { Text("Cantidad") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    maxLines = 1,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 8.dp)
                 )
-                OutlinedTextField(
-                    value = startDate,
-                    onValueChange = { startDate = it },
-                    label = { Text("Fecha de inicio") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                )
-                OutlinedTextField(
-                    value = dosage,
-                    onValueChange = { dosage = it },
-                    label = { Text("Dosis") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 8.dp)
-                )
+
+                DatePickerField(
+                    startDate,
+                    minDate = LocalDate.now(),
+                    label = "Fecha de inicio",
+                ) {
+                    startDate = it
+                }
+
+                if (dosages.isEmpty()){
+                    addDosage(Dosage(0, 0, "",""))
+                    selectedDosage = dosages.first()
+                }
+
+                // Display and manage each dosage entry
+                dosages.forEachIndexed { index, dosage ->
+                    if (selectedDosage != dosage) {
+                        DosageRow(dosage, {
+                            selectedDosage = it
+                        }) {
+                            dosages = dosages.toMutableList().apply { removeAt(index) }
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }else{
+                        DosageField(
+                            selectedDosage,
+                            cancel = {
+                                selectedDosage = null
+                            },
+                            addDosage = {
+                                addDosage(it)
+                                selectedDosage = null
+                            }
+                        )
+                    }
+                }
+
+                if (selectedDosage == null) {
+                    TextButton(onClick =  {
+                        selectedDosage = Dosage(0,0,"","")
+                        addDosage(selectedDosage!!)
+                    }){
+                        Text("Agregar dosis")
+                    }
+                }
+
             }
         }
     )
 }
 
-@SuppressLint("UnrememberedMutableState")
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-fun ExposedPatientDropdown(
-    patients: List<Patient>,
-    selectedPatientId: Long?,
-    onPatientSelected: (Long) -> Unit,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit
-) {
-    val selectedPatientText by derivedStateOf {
-        val patient = patients.find { it.id == selectedPatientId }
-        patient?.let { "${it.firstName} ${it.lastName}" } ?: "Seleccione un paciente"
-    }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { onExpandedChange(!expanded) }
-    ) {
-        TextField(
-            value = selectedPatientText,
-            onValueChange = {  },
-            readOnly = true,
-            label = { Text("Paciente") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = expanded
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor()
-        )
 
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { onExpandedChange(false) },
-        ) {
-            if (patients.isEmpty()) {
-                DropdownMenuItem(
-                    text = { Text("No hay pacientes en la base de datos") },
-                    onClick = { onExpandedChange(false) }
-                )
-            } else {
-                patients.forEach { patient ->
-                    val fullName = "${patient.firstName} ${patient.lastName}"
-                    DropdownMenuItem(
-                        text = { Text(fullName) },
-                        onClick = {
-                            onPatientSelected(patient.id)
-                            onExpandedChange(false)
-                        }
-                    )
+
+@Composable
+fun DosageField(
+    dosage: Dosage?,
+    cancel:() -> Unit,
+    addDosage: (Dosage) -> Unit
+) {
+    var quantity by remember { mutableStateOf(dosage?.quantity ?: "") }
+    var hour by remember { mutableStateOf(dosage?.hour ?: "") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+        ){
+            // Quantity Field
+            OutlinedTextField(
+                value = quantity,
+                onValueChange = { quantity = it},
+                label = { Text("Dosis") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                maxLines = 1,
+                modifier = Modifier
+                    .weight(1f) // Take up remaining space in the row
+                    .padding(vertical = 8.dp).padding(end = 8.dp) // Padding around the TextField
+            )
+
+            // Time Picker Field
+            TimePickerField(
+                selectedTime = hour,
+                onTimeSelected = { hour = it},
+                modifier = Modifier
+                    .weight(2f) // Take up remaining space in the row
+                    .padding(vertical = 8.dp) // Padding around the TimePicker
+            )
+
+        }
+
+
+        Row(modifier = Modifier.fillMaxWidth()) {
+            if (hour.isNotEmpty() || quantity.isNotEmpty()) {
+                Button(
+                    onClick = {
+                        hour = ""
+                        quantity = ""
+                        cancel()
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 2.dp) // Padding around the button
+                ) {
+                    Text("Cancelar")
                 }
+            }
+
+            // Add Dosage Button
+            Button(
+                onClick = {
+                    if (quantity.isNotEmpty() && hour.isNotEmpty()){
+                        addDosage(Dosage(dosage?.id ?: 0, dosage?.indicationId ?: 0, quantity, hour))
+                        hour = ""
+                        quantity = ""
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 2.dp, start = 4.dp) // Padding around the button
+            ) {
+                Text("Agregar")
             }
         }
     }
-}
-@SuppressLint("UnrememberedMutableState")
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ExposedMedicationDropdown(
-    medications: List<Medication>,
-    selectedMedicationId: Long?,
-    onMedicationSelected: (Long) -> Unit,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit
-) {
-    // Texto que se muestra en el TextField
-    val selectedMedicationText by derivedStateOf {
-        val med = medications.find { it.id == selectedMedicationId }
-        med?.name ?: "Seleccione un medicamento"
-    }
 
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { onExpandedChange(!expanded) }
-    ) {
-        // Campo de texto
-        TextField(
-            value = selectedMedicationText,
-            onValueChange = { },
-            readOnly = true,
-            label = { Text("Medicamento") },
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor()
-        )
-
-        // Menú desplegable
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { onExpandedChange(false) },
-        ) {
-            if (medications.isEmpty()) {
-                DropdownMenuItem(
-                    text = { Text("No hay medicamentos disponibles") },
-                    onClick = { onExpandedChange(false) }
-                )
-            } else {
-                medications.forEach { medication ->
-                    DropdownMenuItem(
-                        text = { Text(medication.name) },
-                        onClick = {
-                            onMedicationSelected(medication.id)
-                            onExpandedChange(false)
-                        }
-                    )
-                }
-            }
-        }
-    }
 }

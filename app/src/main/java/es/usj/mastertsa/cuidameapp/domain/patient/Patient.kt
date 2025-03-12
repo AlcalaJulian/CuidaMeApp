@@ -9,7 +9,3 @@ data class Patient(
     val birthDate: String,
     val emergencyContact: String
 )
-
-enum class AdministrationType{
-    Oral, Intravenous, Intramuscular, Subcutaneous, Rectal, Vaginal
-}

@@ -68,8 +68,8 @@ fun PatientDetailScreen(
                                 Text(text = "Indicaciones:")
                                 uiState.indicationList.forEach { indication ->
                                     Text("• ID: ${indication.id}, " +
-                                            "MedicamentoID: ${indication.medicationId}, " +
-                                            "Medicamento: ${indication.medicationName}, " +
+                                            "MedicamentoID: ${indication.medicineId}, " +
+                                            "Medicamento: ${indication.medicineName}, " +
                                             "Recurrencia: ${indication.recurrenceId}, " +
                                             "Fecha inicio: ${indication.startDate}, " +
                                             "Dosis: ${indication.dosage}")

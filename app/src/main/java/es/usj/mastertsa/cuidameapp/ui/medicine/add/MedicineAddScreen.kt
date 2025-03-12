@@ -1,4 +1,4 @@
-package es.usj.mastertsa.cuidameapp.ui.medication.add
+package es.usj.mastertsa.cuidameapp.ui.medicine.add
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,12 +28,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import es.usj.mastertsa.cuidameapp.domain.medication.Medication
+import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
 
 @Composable
 fun MedicationAddScreen(
-    viewModel: MedicationAddViewModel = viewModel(
-        factory = MedicationAddViewModel.factory(
+    viewModel: MedicineAddViewModel = viewModel(
+        factory = MedicineAddViewModel.factory(
             LocalContext.current
         )
     ),
@@ -82,7 +82,7 @@ fun MedicationAddScreen(
                                 administrationType.isNotBlank()
                             ) {
                                 viewModel.addMedication(
-                                    Medication(
+                                    Medicine(
                                         id = 0L,
                                         description = description,
                                         name = name,
@@ -122,7 +122,7 @@ fun MedicationTextField(label: String, value: String, onValueChange: (String) ->
 }
 
 @Composable
-fun MedicationMessage(uiState: MedicationAddUiState) {
+fun MedicationMessage(uiState: MedicineAddUiState) {
     when {
         uiState.success -> Text(text = "Paciente agregado con éxito!")
         uiState.error != null -> Text(text = "Error: ${uiState.error}")

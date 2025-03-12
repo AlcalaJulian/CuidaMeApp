@@ -37,7 +37,7 @@ interface IndicationDao {
     @Query("DELETE FROM IndicationRoom")
     suspend fun deleteAllIndications()
 
-    @Query("SELECT * FROM IndicationDetailView WHERE medicationId = :medicationId")
+    @Query("SELECT * FROM IndicationDetailView WHERE medicineId = :medicationId")
     fun getIndicationsByMedicationId(medicationId: Long): Flow<List<IndicationDetailView>>
 
     @Query("SELECT COUNT(*) FROM IndicationRoom")

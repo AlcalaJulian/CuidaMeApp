@@ -14,10 +14,9 @@ import androidx.navigation.toRoute
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.IndicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.data.repository.PatientRepositoryImpl
-import es.usj.mastertsa.cuidameapp.domain.indication.GetIndicationByIdUseCase
 import es.usj.mastertsa.cuidameapp.domain.indication.GetIndicationsByPatientIdUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.GetPatientByIdUseCase
-import es.usj.mastertsa.cuidameapp.ui.navigation.MedicationDetail
+import es.usj.mastertsa.cuidameapp.ui.navigation.MedicineDetail
 import kotlinx.coroutines.launch
 
 class PatientDetailViewModel(
@@ -28,7 +27,7 @@ class PatientDetailViewModel(
     var uiState by mutableStateOf(PatientDetailUiState())
     private set
 
-    val id = savedState.toRoute<MedicationDetail>().id
+    val id = savedState.toRoute<MedicineDetail>().id
 
     suspend fun getPatientById(id: Long){
         uiState = uiState.copy(loading = true)

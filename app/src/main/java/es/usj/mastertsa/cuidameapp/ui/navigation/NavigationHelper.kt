@@ -11,8 +11,8 @@ import es.usj.mastertsa.cuidameapp.ui.auth.LoginScreen
 import es.usj.mastertsa.cuidameapp.ui.auth.RegisterScreen
 import es.usj.mastertsa.cuidameapp.ui.indication.detail.IndicationDetailScreen
 import es.usj.mastertsa.cuidameapp.ui.indication.list.IndicationListScreen
-import es.usj.mastertsa.cuidameapp.ui.medication.detail.MedicationDetailScreen
-import es.usj.mastertsa.cuidameapp.ui.medication.list.MedicationListScreen
+import es.usj.mastertsa.cuidameapp.ui.medicine.detail.MedicineDetailScreen
+import es.usj.mastertsa.cuidameapp.ui.medicine.list.MedicineListScreen
 import es.usj.mastertsa.cuidameapp.ui.patient.detail.PatientDetailScreen
 import es.usj.mastertsa.cuidameapp.ui.patient.list.PatientListScreen
 
@@ -25,7 +25,7 @@ fun NavigationHelper(
 
         NavHost(
             navController = navController,
-            startDestination = if (authViewModel.user != null) PatientList else Authentication,
+            startDestination = PatientList,//if (authViewModel.user != null) PatientList else Authentication,
             modifier = modifier
         ){
 
@@ -41,11 +41,11 @@ fun NavigationHelper(
             composable<IndicationList> {
                 IndicationListScreen { id -> navController.navigate(IndicationDetail(id = id)) }
             }
-            composable<MedicationList> {
-                MedicationListScreen { id -> navController.navigate(MedicationDetail(id = id)) }
+            composable<MedicineList> {
+                MedicineListScreen { id -> navController.navigate(MedicineDetail(id = id)) }
             }
-            composable<MedicationDetail> {
-                MedicationDetailScreen { navController.popBackStack() }
+            composable<MedicineDetail> {
+                MedicineDetailScreen { navController.popBackStack() }
             }
             composable<Login> {
                 LoginScreen(authViewModel) { navController.popBackStack() }
