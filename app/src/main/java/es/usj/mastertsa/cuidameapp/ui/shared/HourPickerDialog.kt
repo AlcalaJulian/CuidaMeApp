@@ -49,16 +49,18 @@ fun HourPickerDialog(
 
                     // Hour Slider
                     Text(text = "Hora")
-                    CustomDropdown(
-                        items = hours.map { it },
-                        selectedItem = hours.map { it }.find { it == selectedHour },
-                        label = "Hora",
-                        onItemSelected = { selectedHour = it  },
-                        expanded = expandedHour,
-                        onExpandedChange = { expandedHour = it },
-                        itemLabel = { it.toString() },
-                        noItemsText = "No hay horas disponibles"
-                    )
+//                    CustomDropdown(
+//                        items = hours.map { it },
+//                        selectedItem = hours.map { it }.find { it == selectedHour },
+//                        label = "Hora",
+//                        onItemSelected = { selectedHour = it },
+////                        expanded = expandedHour,
+////                        onExpandedChange = { expandedHour = it },
+//                        itemLabel = { it.toString() },
+//                        noItemsText = "No hay horas disponibles",
+//                        expanded = expandedHour,
+//                        onExpandedChange = {expandedHour = it}
+//                    )
 //                    Slider(
 //                        value = selectedHour.toFloat(),
 //                        onValueChange = { selectedHour = it.toInt() },
@@ -76,16 +78,18 @@ fun HourPickerDialog(
 //                        steps = 58,
 //                        modifier = Modifier.fillMaxWidth()
 //                    )
-                    CustomDropdown(
-                        items = minutes,
-                        selectedItem = minutes.find { it == selectedMinute.toString() },
-                        label = "Hora",
-                        onItemSelected = { selectedMinute = it.toInt() },
-                        expanded = expandedMinuts,
-                        onExpandedChange = { expandedMinuts = it },
-                        itemLabel = { it.toString() },
-                        noItemsText = "No hay minutos disponibles"
-                    )
+//                    CustomDropdown(
+//                        items = minutes,
+//                        selectedItem = minutes.find { it == selectedMinute.toString() },
+//                        label = "Hora",
+//                        onItemSelected = { selectedMinute = it.toInt() },
+////                        expanded = expandedMinuts,
+////                        onExpandedChange = { expandedMinuts = it },
+//                        itemLabel = { it },
+//                        noItemsText = "No hay minutos disponibles",
+//                        expanded = expandedMinuts,
+//                        onExpandedChange = { expandedMinuts = it }
+//                    )
 
 
                 }

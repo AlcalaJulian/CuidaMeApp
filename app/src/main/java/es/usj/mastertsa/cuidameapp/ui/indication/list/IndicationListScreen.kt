@@ -1,6 +1,8 @@
 package es.usj.mastertsa.cuidameapp.ui.indication.list
 
-import android.annotation.SuppressLint
+import android.os.Build
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +51,7 @@ import es.usj.mastertsa.cuidameapp.ui.shared.SwipeBox
 import es.usj.mastertsa.cuidameapp.ui.shared.TimePickerField
 import java.time.LocalDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun IndicationListScreen(
     viewModel: IndicationListViewModel = viewModel(
@@ -56,7 +59,7 @@ fun IndicationListScreen(
     ),
     navigateToDetail: (id: Long) -> Unit,
 ) {
-    val uiState = viewModel.indications
+    val uiState = viewModel.indicationUiState
     var showAddIndicationDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -77,7 +80,7 @@ fun IndicationListScreen(
                 }
 
                 uiState.error != null -> {
-                    Text(text = "Error: ${uiState.error}")
+                    Toast.makeText(LocalContext.current, uiState.error, Toast.LENGTH_LONG).show()
                 }
 
                 else -> {
@@ -104,10 +107,6 @@ fun IndicationListScreen(
 
                             Button(
                                 onClick = {
-
-                                    viewModel.getAllPatients()
-                                    viewModel.getAllMedications()
-
                                     showAddIndicationDialog = true
                                 }
                             ) {
@@ -125,11 +124,16 @@ fun IndicationListScreen(
     }
 
     if (showAddIndicationDialog) {
+        viewModel.getAllPatients()
+        viewModel.getAllMedications()
+
         AddIndicationDialog(
             onDismiss = { showAddIndicationDialog = false },
             onConfirm = { newIndication, dosages ->
                 viewModel.addIndicationAndRecurrences(newIndication, dosages)
-                showAddIndicationDialog = false
+                if(viewModel.indicationUiState.error != null) {
+                    showAddIndicationDialog = false
+                }
             },
             patients = uiState.patientList,
             medications = uiState.medicationsList
@@ -194,7 +198,7 @@ fun IndicationItem(
     }
 }
 
-@SuppressLint("NewApi")
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddIndicationDialog(
     onDismiss: () -> Unit,
@@ -204,36 +208,33 @@ fun AddIndicationDialog(
 ) {
     var selectedPatientId by remember { mutableStateOf<Long?>(null) }
     var selectedMedicationId by remember { mutableStateOf<Long?>(null) }
-
-    var expandedPatient by remember { mutableStateOf(false) }
-    var expandedMedication by remember { mutableStateOf(false) }
-
     var recurrenceId by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf("") }
-    val recurrenceOptions = listOf("Every 4 hours", "Every day", "Weekly")
-    var expandedRecurrence by remember { mutableStateOf(false) }
-
-    var dosages by remember { mutableStateOf(listOf<Dosage>()) }
     var selectedDosage by remember { mutableStateOf<Dosage?>(null) }
+    var dosages by remember { mutableStateOf(listOf<Dosage>()) }
+    val recurrenceOptions = listOf("Every day", "Every week")
 
-
+    var expandedPatient by remember { mutableStateOf(false) }
+    var expandedMedication by remember { mutableStateOf(false) }
+    var expandedRecurrence by remember { mutableStateOf(false) }
     // Function to add a new dosage entry to the list
     fun addDosage(dosage: Dosage) {
         dosages = if (selectedDosage == null) {
-            dosages + dosage // Add a new dosage entry with empty fields
-        }else{
+            dosages + dosage // Add a new dosage entry
+        } else {
             dosages.map {
-                if (it.id == selectedDosage?.id) dosage else it
+                if (it == selectedDosage) dosage else it
             }
         }
+        //selectedDosage = null // Reset selectedDosage after adding
     }
 
     AlertDialog(
         onDismissRequest = {
             onDismiss()
-            dosages = listOf()
-                           },
+            dosages = listOf() // Reset dosages when dismissing dialog
+        },
         confirmButton = {
             TextButton(
                 onClick = {
@@ -245,9 +246,9 @@ fun AddIndicationDialog(
                         medicineId = medicationAsInt,
                         recurrenceId = recurrenceId,
                         startDate = startDate,
-                        dosage = dosages.size
+                        dosage = quantity.toInt()
                     )
-                    onConfirm(indication, dosages)
+                    onConfirm(indication, dosages.filter { it.hour.isNotEmpty() && it.quantity.isNotEmpty() })
                 }
             ) {
                 Text("Agregar")
@@ -256,7 +257,7 @@ fun AddIndicationDialog(
         dismissButton = {
             TextButton(onClick = {
                 onDismiss()
-                dosages = listOf()
+                dosages = listOf() // Reset dosages when cancelling
             }) {
                 Text("Cancelar", color = Color.Red)
             }
@@ -264,15 +265,18 @@ fun AddIndicationDialog(
         title = { Text("Agregar Indicación") },
         text = {
             Column {
-
                 CustomDropdown(
                     items = patients,
                     selectedItem = patients.find { it.id == selectedPatientId },
                     label = "Paciente",
-                    onItemSelected = { selectedPatientId = it.id  },
-                    expanded = expandedPatient,
-                    onExpandedChange = { expandedPatient = it },
-                    itemLabel = { "${it.firstName} ${it.lastName}" },
+                    onItemSelected = { selectedPatientId = it.id },
+//                    expanded =  expandedPatient,
+//                    onExpandedChange =  { expandedPatient = it  },
+                    itemLabel = {
+
+                            "${it.firstName} ${it.lastName}"
+
+                                },
                     noItemsText = "No hay pacientes en la base de datos"
                 )
 
@@ -283,23 +287,34 @@ fun AddIndicationDialog(
                     selectedItem = medications.find { it.id == selectedMedicationId },
                     label = "Medicamento",
                     onItemSelected = { selectedMedicationId = it.id },
-                    expanded = expandedMedication,
-                    onExpandedChange = { expandedMedication = it},
-                    itemLabel = { it.name ?: "" },
+//                   expanded =  expandedMedication,
+//                    onExpandedChange =  { expandedMedication = it  },
+                    itemLabel = { it.name },
                     noItemsText = "No hay medicamentos disponibles"
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+//                CustomDropdown(
+//                    items = recurrenceOptions,
+//                    selectedItem = recurrenceOptions.find { it == recurrenceId },
+//                    label = "Recurrencia",
+//                    onItemSelected = { recurrenceId = it },
+////                    expanded = remember { mutableStateOf(false) }.value,
+////                    onExpandedChange =  { mutableStateOf(it) } ,
+//                    itemLabel = { it },
+//                    noItemsText = "No hay recurrencias disponibles"
+//                )
+
                 CustomDropdown(
                     items = recurrenceOptions,
-                    selectedItem = recurrenceOptions.find { it == recurrenceId },
+                    selectedItem = recurrenceId,
                     label = "Recurrencia",
                     onItemSelected = { recurrenceId = it },
-                    expanded = expandedRecurrence,
-                    onExpandedChange = { expandedRecurrence = it},
-                    itemLabel = { it ?: "" },
-                    noItemsText = "No hay recurrencias disponibles"
+                    itemLabel = { it },
+                    noItemsText = "No hay recurrencias disponibles",
+//                    expanded =  expandedRecurrence,
+//                    onExpandedChange =  { expandedRecurrence = it  },
                 )
 
                 OutlinedTextField(
@@ -321,47 +336,48 @@ fun AddIndicationDialog(
                     startDate = it
                 }
 
-                if (dosages.isEmpty()){
-                    addDosage(Dosage(0, 0, "",""))
-                    selectedDosage = dosages.first()
+                // Add a new dosage entry if dosages is empty
+                if (dosages.isEmpty()) {
+                    addDosage(Dosage())
+                    selectedDosage = dosages.first() // Set the first dosage as selected
                 }
 
-                // Display and manage each dosage entry
+                // Display each dosage entry
                 dosages.forEachIndexed { index, dosage ->
                     if (selectedDosage != dosage) {
                         DosageRow(dosage, {
-                            selectedDosage = it
+                            selectedDosage = it // Set selected dosage when clicked
                         }) {
-                            dosages = dosages.toMutableList().apply { removeAt(index) }
+                            dosages = dosages.toMutableList().apply { removeAt(index) } // Remove dosage on delete
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                    }else{
+                    } else {
                         DosageField(
-                            selectedDosage,
-                            cancel = {
-                                selectedDosage = null
-                            },
+                            dosage,
+                            cancel = { selectedDosage = null }, // Reset selected dosage
                             addDosage = {
                                 addDosage(it)
                                 selectedDosage = null
-                            }
+                            } // Add new dosage entry
                         )
                     }
                 }
 
+                // Button to add a new dosage when no dosage is selected
                 if (selectedDosage == null) {
-                    TextButton(onClick =  {
-                        selectedDosage = Dosage(0,0,"","")
-                        addDosage(selectedDosage!!)
-                    }){
+                    TextButton(onClick = {
+                        val data = Dosage()
+                        addDosage(data) // Add an empty dosage
+                        selectedDosage = data
+                    }) {
                         Text("Agregar dosis")
                     }
                 }
-
             }
         }
     )
 }
+
 
 
 

@@ -8,7 +8,7 @@ class AddAnIndicationToPatientUseCase(
     private val recurrenceRepository: RecurrenceRepository
 ) {
     suspend fun execute(indication: Indication, recurrences: List<Recurrence>){
-        indicationRepository.addAnIndicationToPatient(indication)
-        recurrenceRepository.addRecurrences(recurrences)
+        val indicationId = indicationRepository.addAnIndicationToPatient(indication)
+        recurrenceRepository.addRecurrences(recurrences.map { it.copy(indicationId = indicationId) })
     }
 }

@@ -8,5 +8,5 @@ interface IndicationRepository {
     suspend fun getIndicationById(id: Long): IndicationDetail
     suspend fun getIndicationsByPatientId(id: Long): List<IndicationDetail>
     suspend fun deleteIndicationById(id: Long)
-    suspend fun addAnIndicationToPatient(indication: Indication)
+    suspend fun addAnIndicationToPatient(indication: Indication): Long
 }

@@ -52,7 +52,7 @@ fun DatePickerField(
                     datePickerDialog = DatePickerDialog(
                         context,
                         { _, year, month, dayOfMonth ->
-                            val date = "$dayOfMonth/${month + 1}/$year"
+                            val date = "$dayOfMonth-${month + 1}-$year"
                             onDateSelected(date)
                             datePickerDialog?.hide()
                             focusRequester.freeFocus()

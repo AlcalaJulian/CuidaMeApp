@@ -30,8 +30,8 @@ class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepos
         db.getIndicationDao().deleteIndicationById(id)
     }
 
-    override suspend fun addAnIndicationToPatient(indication: Indication) {
-        db.getIndicationDao().insertIndication(indication.toEntity())
+    override suspend fun addAnIndicationToPatient(indication: Indication): Long {
+        return db.getIndicationDao().insertIndication(indication.toEntity())
     }
 
 

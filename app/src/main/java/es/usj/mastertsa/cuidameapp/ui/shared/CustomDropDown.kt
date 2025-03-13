@@ -2,19 +2,27 @@ package es.usj.mastertsa.cuidameapp.ui.shared
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,24 +32,26 @@ fun <T> CustomDropdown(
     selectedItem: T?,
     label: String,
     onItemSelected: (T) -> Unit,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit,
+//    expanded: Boolean,
+//    onExpandedChange: (Boolean) -> Unit,
     itemLabel:  (T) -> String,
     noItemsText: String
 ) {
-    val selectedItemText by remember {
-        derivedStateOf {
-            (selectedItem ?: items.firstOrNull())?.let { itemLabel(it)}
-        }
-    }
+//    val selectedItemText by remember {
+//        derivedStateOf {
+//            if (selectedItem != null)  itemLabel(selectedItem) else ""
+//        }
+//    }
+
+    var expanded by remember { mutableStateOf(false) }
 
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { onExpandedChange(!expanded) }
+        onExpandedChange = { expanded = it }
     ) {
         TextField(
-            value = selectedItemText ?: "",
+            value = selectedItem?.let { itemLabel(it) } ?: "",
             onValueChange = {},
             readOnly = true,
             label = { Text(label) },
@@ -57,12 +67,12 @@ fun <T> CustomDropdown(
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { onExpandedChange(false) }
+            onDismissRequest = { expanded = false }
         ) {
             if (items.isEmpty()) {
                 DropdownMenuItem(
                     text = { Text(noItemsText) },
-                    onClick = { onExpandedChange(false) }
+                    onClick = { expanded = false }
                 )
             } else {
                 items.forEach { item ->
@@ -70,7 +80,7 @@ fun <T> CustomDropdown(
                         text = { Text(itemLabel(item)) },
                         onClick = {
                             onItemSelected(item)
-                            onExpandedChange(false)
+                            expanded = false
                         }
                     )
                 }
