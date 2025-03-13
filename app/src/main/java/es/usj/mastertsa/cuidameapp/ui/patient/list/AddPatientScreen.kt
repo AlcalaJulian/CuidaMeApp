@@ -68,12 +68,12 @@ fun AddPatientDialog(
                     .fillMaxWidth()
             ) {
                 Text(text = "Agregar Paciente", style = MaterialTheme.typography.headlineSmall)
-
-                PatientTextField(label = "Identificación", value = identification, onValueChange = { identification = it })
                 IdentificationTypeDropdown(
                     selectedType = identificationType,
                     onTypeSelected = { identificationType = it }
                 )
+                PatientTextField(label = "Identificación", value = identification, onValueChange = { identification = it })
+
                 PatientTextField(label = "Nombre", value = firstName, onValueChange = { firstName = it })
                 PatientTextField(label = "Apellido", value = lastName, onValueChange = { lastName = it })
                 DatePickerField(

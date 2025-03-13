@@ -4,6 +4,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,10 +16,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -42,6 +47,7 @@ import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.IndicationDetail
 import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
+import es.usj.mastertsa.cuidameapp.domain.share.Util.Companion.calculateDays
 import es.usj.mastertsa.cuidameapp.ui.indication.add.DosageRow
 import es.usj.mastertsa.cuidameapp.ui.shared.CustomDropdown
 import es.usj.mastertsa.cuidameapp.ui.shared.DatePickerField
@@ -91,7 +97,10 @@ fun IndicationListScreen(
                     ) {
 
                         if (uiState.data.isNotEmpty()) {
-                            LazyColumn(modifier = Modifier.weight(1f)) {
+                            LazyColumn(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.SpaceBetween
+                            ) {
                                 items(uiState.data) { indication ->
 
                                     IndicationItem(
@@ -174,13 +183,26 @@ fun IndicationItem(
                     Text(
                         text = indication.patientName,
                         maxLines = 1,
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.headlineLarge
                     )
-                    Text(text = indication.medicineName, style = MaterialTheme.typography.bodySmall)
+                    Text(text = "Medicamento: ${indication.medicineName}", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = "Recurrencia: ${indication.dosage} ${calculateDays(indication.dosage, indication.recurrenceId)}", style = MaterialTheme.typography.bodyLarge)
+                    Text(text = "Inicio: ${indication.startDate}", style = MaterialTheme.typography.bodyLarge)
                 }
-                Text(
-                    text = indication.startDate,
-                    style = MaterialTheme.typography.bodySmall
+//                Text(
+//                    text = indication.startDate,
+//                    style = MaterialTheme.typography.bodySmall
+//                )
+
+                Icon(
+                    Icons.Default.Delete,
+                    tint = Color.Red,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .clickable {
+                        onDelete(indication.id)
+                    }
                 )
             }
         }
@@ -213,11 +235,11 @@ fun AddIndicationDialog(
     var startDate by remember { mutableStateOf("") }
     var selectedDosage by remember { mutableStateOf<Dosage?>(null) }
     var dosages by remember { mutableStateOf(listOf<Dosage>()) }
-    val recurrenceOptions = listOf("Every day", "Every week")
+    val recurrenceOptions = listOf("Cada día", "Cada semana")
 
-    var expandedPatient by remember { mutableStateOf(false) }
-    var expandedMedication by remember { mutableStateOf(false) }
-    var expandedRecurrence by remember { mutableStateOf(false) }
+//    var expandedPatient by remember { mutableStateOf(false) }
+//    var expandedMedication by remember { mutableStateOf(false) }
+//    var expandedRecurrence by remember { mutableStateOf(false) }
     // Function to add a new dosage entry to the list
     fun addDosage(dosage: Dosage) {
         dosages = if (selectedDosage == null) {

@@ -97,7 +97,7 @@ fun MedicationAddScreen(
                 dosage = dosage,
                 //hour =
             )
-            viewModel.addIndicationAndRecurrences(indication) // You can add recurrences if needed
+            viewModel.addIndicationAndRecurrences(indication, dosages) // You can add recurrences if needed
             //navController.popBackStack() // Navigate back
         }) {
             Text("Save Indication")

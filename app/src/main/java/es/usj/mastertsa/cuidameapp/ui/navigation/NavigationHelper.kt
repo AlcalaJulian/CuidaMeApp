@@ -1,5 +1,7 @@
 package es.usj.mastertsa.cuidameapp.ui.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -16,6 +18,7 @@ import es.usj.mastertsa.cuidameapp.ui.medicine.list.MedicineListScreen
 import es.usj.mastertsa.cuidameapp.ui.patient.detail.PatientDetailScreen
 import es.usj.mastertsa.cuidameapp.ui.patient.list.PatientListScreen
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavigationHelper(
     navController: NavHostController,

@@ -57,18 +57,19 @@ class IndicationListViewModel(
         }
 
     }
-    fun addPatient(indication: Indication, ) {
-        indicationUiState = indicationUiState.copy(loading = true, error = null, success = false)
-        viewModelScope.launch {
-            try {
-                addAnIndicationToPatientUseCase.execute(indication, emptyList())
-                indicationUiState = indicationUiState.copy(loading = false, success = true)
-                getAllIndications()
-            } catch (exception: Exception) {
-                indicationUiState = indicationUiState.copy(loading = false, error = exception.message)
-            }
-        }
-    }
+
+//    fun addPatient(indication: Indication, ) {
+//        indicationUiState = indicationUiState.copy(loading = true, error = null, success = false)
+//        viewModelScope.launch {
+//            try {
+//                addAnIndicationToPatientUseCase.execute(indication, emptyList())
+//                indicationUiState = indicationUiState.copy(loading = false, success = true)
+//                getAllIndications()
+//            } catch (exception: Exception) {
+//                indicationUiState = indicationUiState.copy(loading = false, error = exception.message)
+//            }
+//        }
+//    }
 
     fun getAllIndications(){
         indicationUiState = indicationUiState.copy(loading = true)
@@ -87,6 +88,7 @@ class IndicationListViewModel(
         viewModelScope.launch {
             try {
                 deleteIndicationUseCase.execute(id)
+                indicationUiState = indicationUiState.copy(loading = false, data = indicationUiState.data.filterNot { it.id == id })
             } catch (e: Exception) {
                 indicationUiState = indicationUiState.copy(error = "Failed to delete indication")
             }
@@ -102,6 +104,7 @@ class IndicationListViewModel(
                 val recurrences = generateRecurrences(indication, dosis)
                 addAnIndicationToPatientUseCase.execute(indication, recurrences)
                 indicationUiState = indicationUiState.copy(loading = false)
+                getAllIndications()
             } catch (e: Exception) {
                 indicationUiState = indicationUiState.copy(error = "Error al guardar la indicación.", loading = false)
             }
@@ -120,7 +123,7 @@ class IndicationListViewModel(
 
         // Logic for calculating recurrences
         when {
-            recurrencePattern.contains("every") -> {
+            recurrencePattern.contains("cada") -> {
                 //val interval = recurrencePattern.split(" ")[1].toIntOrNull() ?: 1
                 val recurrenceType = recurrencePattern.split(" ")[1]
 
@@ -137,7 +140,8 @@ class IndicationListViewModel(
                             specificDate = currentDate,
                             completed = false,
                             id = 0L,
-                            hour = it.hour
+                            hour = it.hour,
+                            quantity = it.quantity.toInt()
                         )
                         recurrences.add(recurrence)
                     }
@@ -145,13 +149,13 @@ class IndicationListViewModel(
 
                     // Calculate next recurrence based on the recurrence type
                     when (recurrenceType) {
-                        "day" -> {
+                        "día" -> {
                             currentDate = incrementDateByDays(currentDate, 1)
                         }
-//                        "hour" -> {
+//                        "hora" -> {
 //                            currentHour = incrementHourBy(currentHour, interval)
 //                        }
-                        "week" -> {
+                        "semana" -> {
                             currentDate = incrementDateByWeeks(currentDate, 1)
                         }
                     }
@@ -174,7 +178,7 @@ class IndicationListViewModel(
         val day = dateParts[0].toInt() + days
 
         // You should implement proper date validation, this is simplified
-        return "$year-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}"
+        return "${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-$year"
     }
 
     // Function to increment time by hours (simple placeholder for time manipulation)

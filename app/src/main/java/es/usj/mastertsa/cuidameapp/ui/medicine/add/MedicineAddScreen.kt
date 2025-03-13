@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
+import es.usj.mastertsa.cuidameapp.ui.shared.CustomDropdown
 
 @Composable
 fun MedicationAddScreen(
@@ -43,6 +44,8 @@ fun MedicationAddScreen(
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var administrationType by remember { mutableStateOf("") }
+
+    val administrationTypes = listOf("Oral", "Intrabenosa", "Muscular")
 
     val uiState = viewModel.uiState
 
@@ -64,8 +67,15 @@ fun MedicationAddScreen(
                 MedicationTextField(label = "Nombre", value = name, onValueChange = { name = it })
                 MedicationTextField(label = "Descriptión", value = description, onValueChange = { description = it })
 
-                MedicationTextField(label = "Tipo de administración", value = administrationType, onValueChange = { administrationType = it })
-
+                //MedicationTextField(label = "Tipo de administración", value = administrationType, onValueChange = { administrationType = it })
+                CustomDropdown(
+                    items = administrationTypes,
+                    selectedItem = administrationType,
+                    label = "Vía de administración",
+                    onItemSelected = { administrationType = it },
+                    itemLabel = { it },
+                    noItemsText = "No hay data disponibles",
+                )
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Row(
@@ -86,7 +96,7 @@ fun MedicationAddScreen(
                                         id = 0L,
                                         description = description,
                                         name = name,
-                                        administrationType = administrationType.toInt()
+                                        administrationType = administrationType
                                     )
                                 )
                                 onSuccess()

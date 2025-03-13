@@ -25,7 +25,6 @@ class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepos
         }
     }
 
-
     override suspend fun deleteIndicationById(id: Long) {
         db.getIndicationDao().deleteIndicationById(id)
     }

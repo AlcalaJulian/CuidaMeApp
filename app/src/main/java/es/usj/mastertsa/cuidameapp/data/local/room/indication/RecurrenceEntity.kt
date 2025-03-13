@@ -17,6 +17,7 @@ import androidx.room.PrimaryKey
 data class RecurrenceEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val indicationId: Long,
+    val quantity: Int,
     val specificDate: String?,
     val hour: String,
     val completed: Boolean

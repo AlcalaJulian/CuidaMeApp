@@ -8,5 +8,5 @@ data class MedicineEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val name: String,
     val description: String,
-    val administrationType: Int
+    val administrationType: String
 )

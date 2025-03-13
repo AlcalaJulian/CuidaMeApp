@@ -127,7 +127,7 @@ fun IndicationDetailView.toIndicationDetail() =  IndicationDetail(
     patientId = this.patientId,
     patientName = this.patientName,
     medicineName = this.medicationName,
-    hour = ""
+    hour = this.hour
 )
 
 fun IndicationDetail.toIndicationEntity() = IndicationEntity(
@@ -152,7 +152,8 @@ fun RecurrenceEntity.toDomain() =
         indicationId = this.indicationId,
         specificDate = this.specificDate,
         hour = this.hour,
-        completed = this.completed
+        completed = this.completed,
+         quantity = quantity
     )
 
 // Extension function to map Recurrence to RecurrenceEntity
@@ -161,5 +162,6 @@ fun Recurrence.toEntity() = RecurrenceEntity(
         indicationId = this.indicationId,
         specificDate = this.specificDate,
         hour = this.hour,
-        completed = this.completed
+        completed = this.completed,
+        quantity = quantity
     )

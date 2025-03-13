@@ -10,6 +10,7 @@ import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.IndicationRepositoryImpl
 import es.usj.mastertsa.cuidameapp.data.repository.RecurrenceRepositoryIml
 import es.usj.mastertsa.cuidameapp.domain.indication.AddAnIndicationToPatientUseCase
+import es.usj.mastertsa.cuidameapp.domain.indication.Dosage
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.Recurrence
 import kotlinx.coroutines.launch
@@ -23,16 +24,16 @@ class MedicationAddViewModel(private val addAnIndicationToPatientUseCase: AddAnI
     val recurrences: LiveData<List<Recurrence>> get() = _recurrences
 
     // Add indication and its recurrences
-    fun addIndicationAndRecurrences(indication: Indication) {
+    fun addIndicationAndRecurrences(indication: Indication, dosages: List<Dosage>) {
         viewModelScope.launch {
             // Generate recurrences based on the recurrence type
-            val recurrences = generateRecurrences(indication)
+            val recurrences = generateRecurrences(indication, dosages)
             addAnIndicationToPatientUseCase.execute(indication, recurrences)
         }
     }
 
     // Generate recurrences based on indication's recurrence pattern
-    private fun generateRecurrences(indication: Indication): List<Recurrence> {
+    private fun generateRecurrences(indication: Indication, dosages: List<Dosage>): List<Recurrence> {
         val recurrences = mutableListOf<Recurrence>()
         val startDate = indication.startDate
         //val startHour = indication.hour
@@ -51,15 +52,18 @@ class MedicationAddViewModel(private val addAnIndicationToPatientUseCase: AddAnI
 
                 // Loop to generate recurrences based on the interval and type
                 for (i in 1..dosage) {
-                    val recurrence = Recurrence(
-                        indicationId = indication.id,
-                        specificDate = currentDate,
-                        //hour = currentHour,
-                        completed = false,
-                        id = 0,
-                        hour = ""
-                    )
-                    recurrences.add(recurrence)
+
+                    dosages.forEach {
+                        val recurrence = Recurrence(
+                            indicationId = indication.id,
+                            specificDate = currentDate,
+                            completed = false,
+                            id = 0,
+                            hour = it.hour,
+                            quantity = it.quantity.toInt()
+                        )
+                        recurrences.add(recurrence)
+                    }
 
                     // Calculate next recurrence based on the recurrence type
                     when (recurrenceType) {

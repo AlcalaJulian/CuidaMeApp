@@ -5,5 +5,5 @@ data class Dosage(
     val indicationId: Long = 0,
     val quantity: String = "",
     val hour: String = "",
-    val complete: Boolean = false
+    //val complete: Boolean = false
 )
