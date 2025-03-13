@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class PatientEntity(
     @PrimaryKey(autoGenerate = true) val id: Long,
     val identification: String,
-    val identificationType: Int,
+    val identificationType: String,
     val firstName: String,
     val lastName: String,
     val birthDate: String,

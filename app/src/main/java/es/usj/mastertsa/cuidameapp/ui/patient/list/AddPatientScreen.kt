@@ -1,7 +1,9 @@
 package es.usj.mastertsa.cuidameapp.ui.patient.list
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +15,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -64,15 +70,12 @@ fun AddPatientDialog(
                 Text(text = "Agregar Paciente", style = MaterialTheme.typography.headlineSmall)
 
                 PatientTextField(label = "Identificación", value = identification, onValueChange = { identification = it })
-                PatientTextField(
-                    label = "Tipo de Identificación",
-                    value = identificationType,
-                    onValueChange = { identificationType = it },
-                    keyboardType = KeyboardType.Number
+                IdentificationTypeDropdown(
+                    selectedType = identificationType,
+                    onTypeSelected = { identificationType = it }
                 )
                 PatientTextField(label = "Nombre", value = firstName, onValueChange = { firstName = it })
                 PatientTextField(label = "Apellido", value = lastName, onValueChange = { lastName = it })
-                //PatientTextField(label = "Fecha de Nacimiento (YYYY-MM-DD)", value = birthDate, onValueChange = { birthDate = it })
                 DatePickerField(
                     birthDate,
                     maxDate = LocalDate.now(),
@@ -102,7 +105,7 @@ fun AddPatientDialog(
                                     Patient(
                                         id = 0L,
                                         identification = identification,
-                                        identificationType = identificationType.toInt(),
+                                        identificationType = identificationType,
                                         firstName = firstName,
                                         lastName = lastName,
                                         birthDate = birthDate,
@@ -124,6 +127,47 @@ fun AddPatientDialog(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 PatientMessage(uiState = uiState)
+            }
+        }
+    }
+}
+
+val identificationTypes = listOf("DNI", "NIE", "Pasaporte")
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun IdentificationTypeDropdown(
+    selectedType: String,
+    onTypeSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val identificationTypes = listOf("DNI", "NIE", "Pasaporte")
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = selectedType,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Tipo de Identificación") },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            identificationTypes.forEach { type ->
+                DropdownMenuItem(
+                    text = { Text(type) },
+                    onClick = {
+                        onTypeSelected(type)
+                        expanded = false
+                    }
+                )
             }
         }
     }
