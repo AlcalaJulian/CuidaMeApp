@@ -28,7 +28,7 @@ fun NavigationHelper(
 
         NavHost(
             navController = navController,
-            startDestination = PatientList,//if (authViewModel.user != null) PatientList else Authentication,
+            startDestination = if (authViewModel.uiState.user != null) PatientList else Authentication,
             modifier = modifier
         ){
 

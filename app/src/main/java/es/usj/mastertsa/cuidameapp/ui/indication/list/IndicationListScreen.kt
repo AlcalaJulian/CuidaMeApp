@@ -3,12 +3,14 @@ package es.usj.mastertsa.cuidameapp.ui.indication.list
 import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,9 +21,13 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.sharp.Add
+import androidx.compose.material.icons.sharp.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -49,6 +55,7 @@ import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
 import es.usj.mastertsa.cuidameapp.domain.share.Util.Companion.calculateDays
 import es.usj.mastertsa.cuidameapp.ui.indication.add.DosageRow
+import es.usj.mastertsa.cuidameapp.ui.indication.detail.DetailRow
 import es.usj.mastertsa.cuidameapp.ui.shared.CustomDropdown
 import es.usj.mastertsa.cuidameapp.ui.shared.DatePickerField
 import es.usj.mastertsa.cuidameapp.ui.shared.DeleteConfirmDialog
@@ -99,7 +106,7 @@ fun IndicationListScreen(
                         if (uiState.data.isNotEmpty()) {
                             LazyColumn(
                                 modifier = Modifier.weight(1f),
-                                verticalArrangement = Arrangement.SpaceBetween
+                                verticalArrangement = Arrangement.spacedBy(5.dp)
                             ) {
                                 items(uiState.data) { indication ->
 
@@ -163,13 +170,14 @@ fun IndicationItem(
         onDelete = {
             showDialog = true
         },
-        onEdit = { showDialog = true },
+        onEdit = { onClick() },
     ) {
         //Display the medication item as a card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onClick() }
+                .clickable { onClick() },
+            elevation = CardDefaults.elevatedCardElevation(12.dp),
         ) {
             Row(
                 modifier = Modifier
@@ -183,11 +191,13 @@ fun IndicationItem(
                     Text(
                         text = indication.patientName,
                         maxLines = 1,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.headlineLarge
                     )
-                    Text(text = "Medicamento: ${indication.medicineName}", style = MaterialTheme.typography.bodyLarge)
-                    Text(text = "Recurrencia: ${indication.dosage} ${calculateDays(indication.dosage, indication.recurrenceId)}", style = MaterialTheme.typography.bodyLarge)
-                    Text(text = "Inicio: ${indication.startDate}", style = MaterialTheme.typography.bodyLarge)
+
+                    DetailRow(modifier = Modifier,"Medicamento:", indication.medicineName)
+                    DetailRow(modifier = Modifier,"Recurrencia:", "${indication.dosage} ${calculateDays(indication.dosage, indication.recurrenceId)}")
+                    DetailRow(modifier = Modifier,"Inicio:",  indication.startDate)
                 }
 //                Text(
 //                    text = indication.startDate,
@@ -233,23 +243,18 @@ fun AddIndicationDialog(
     var recurrenceId by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf("") }
-    var selectedDosage by remember { mutableStateOf<Dosage?>(null) }
+    //var selectedDosage by remember { mutableStateOf<Dosage?>(null) }
     var dosages by remember { mutableStateOf(listOf<Dosage>()) }
     val recurrenceOptions = listOf("Cada día", "Cada semana")
 
-//    var expandedPatient by remember { mutableStateOf(false) }
-//    var expandedMedication by remember { mutableStateOf(false) }
-//    var expandedRecurrence by remember { mutableStateOf(false) }
-    // Function to add a new dosage entry to the list
     fun addDosage(dosage: Dosage) {
-        dosages = if (selectedDosage == null) {
-            dosages + dosage // Add a new dosage entry
-        } else {
-            dosages.map {
-                if (it == selectedDosage) dosage else it
-            }
-        }
-        //selectedDosage = null // Reset selectedDosage after adding
+       // dosages = if (selectedDosage == null) {
+         dosages = dosages + dosage // Add a new dosage entry
+//        } else {
+//            dosages.map {
+//                if (it == selectedDosage) dosage else it
+//            }
+//        }
     }
 
     AlertDialog(
@@ -258,30 +263,40 @@ fun AddIndicationDialog(
             dosages = listOf() // Reset dosages when dismissing dialog
         },
         confirmButton = {
-            TextButton(
+            Button(
                 onClick = {
-                    val medicationAsInt = (selectedMedicationId ?: 0L).toInt()
+                    if (quantity.isNotEmpty() && startDate.isNotEmpty() && recurrenceId.isNotEmpty() && selectedMedicationId != 0L && selectedMedicationId != 0L && dosages.isNotEmpty()) {
+                        val medicationAsInt = (selectedMedicationId ?: 0L).toInt()
 
-                    val indication = Indication(
-                        id = 0L,
-                        patientId = selectedPatientId ?: 0L,
-                        medicineId = medicationAsInt,
-                        recurrenceId = recurrenceId,
-                        startDate = startDate,
-                        dosage = quantity.toInt()
-                    )
-                    onConfirm(indication, dosages.filter { it.hour.isNotEmpty() && it.quantity.isNotEmpty() })
+                        val indication = Indication(
+                            id = 0L,
+                            patientId = selectedPatientId ?: 0L,
+                            medicineId = medicationAsInt,
+                            recurrenceId = recurrenceId,
+                            startDate = startDate,
+                            dosage = quantity.toInt()
+                        )
+                        onConfirm(
+                            indication,
+                            dosages.filter { it.hour.isNotEmpty() && it.quantity.isNotEmpty() })
+                    }
                 }
             ) {
-                Text("Agregar")
+                Text("Guardar")
             }
         },
         dismissButton = {
-            TextButton(onClick = {
+            Button(
+                colors = ButtonColors(
+                    containerColor = Color.Red, contentColor = Color.White,
+                    disabledContainerColor = Color.DarkGray,
+                    disabledContentColor = Color.Black
+                ),
+                onClick = {
                 onDismiss()
                 dosages = listOf() // Reset dosages when cancelling
             }) {
-                Text("Cancelar", color = Color.Red)
+                Text("Cancelar")
             }
         },
         title = { Text("Agregar Indicación") },
@@ -292,8 +307,6 @@ fun AddIndicationDialog(
                     selectedItem = patients.find { it.id == selectedPatientId },
                     label = "Paciente",
                     onItemSelected = { selectedPatientId = it.id },
-//                    expanded =  expandedPatient,
-//                    onExpandedChange =  { expandedPatient = it  },
                     itemLabel = {
 
                             "${it.firstName} ${it.lastName}"
@@ -309,24 +322,11 @@ fun AddIndicationDialog(
                     selectedItem = medications.find { it.id == selectedMedicationId },
                     label = "Medicamento",
                     onItemSelected = { selectedMedicationId = it.id },
-//                   expanded =  expandedMedication,
-//                    onExpandedChange =  { expandedMedication = it  },
                     itemLabel = { it.name },
                     noItemsText = "No hay medicamentos disponibles"
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
-
-//                CustomDropdown(
-//                    items = recurrenceOptions,
-//                    selectedItem = recurrenceOptions.find { it == recurrenceId },
-//                    label = "Recurrencia",
-//                    onItemSelected = { recurrenceId = it },
-////                    expanded = remember { mutableStateOf(false) }.value,
-////                    onExpandedChange =  { mutableStateOf(it) } ,
-//                    itemLabel = { it },
-//                    noItemsText = "No hay recurrencias disponibles"
-//                )
 
                 CustomDropdown(
                     items = recurrenceOptions,
@@ -335,8 +335,6 @@ fun AddIndicationDialog(
                     onItemSelected = { recurrenceId = it },
                     itemLabel = { it },
                     noItemsText = "No hay recurrencias disponibles",
-//                    expanded =  expandedRecurrence,
-//                    onExpandedChange =  { expandedRecurrence = it  },
                 )
 
                 OutlinedTextField(
@@ -359,42 +357,32 @@ fun AddIndicationDialog(
                 }
 
                 // Add a new dosage entry if dosages is empty
-                if (dosages.isEmpty()) {
-                    addDosage(Dosage())
-                    selectedDosage = dosages.first() // Set the first dosage as selected
-                }
+//                if (dosages.isEmpty()) {
+//                    addDosage(Dosage())
+//                    selectedDosage = dosages.first() // Set the first dosage as selected
+//                }
 
                 // Display each dosage entry
                 dosages.forEachIndexed { index, dosage ->
-                    if (selectedDosage != dosage) {
+                    //if (selectedDosage != dosage && dosage.hour.isNotEmpty() && dosage.quantity.isNotEmpty()) {
                         DosageRow(dosage, {
-                            selectedDosage = it // Set selected dosage when clicked
+                            //selectedDosage = it // Set selected dosage when clicked
                         }) {
                             dosages = dosages.toMutableList().apply { removeAt(index) } // Remove dosage on delete
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                    } else {
-                        DosageField(
-                            dosage,
-                            cancel = { selectedDosage = null }, // Reset selected dosage
-                            addDosage = {
-                                addDosage(it)
-                                selectedDosage = null
-                            } // Add new dosage entry
-                        )
-                    }
+                    //}
                 }
 
-                // Button to add a new dosage when no dosage is selected
-                if (selectedDosage == null) {
-                    TextButton(onClick = {
-                        val data = Dosage()
-                        addDosage(data) // Add an empty dosage
-                        selectedDosage = data
-                    }) {
-                        Text("Agregar dosis")
-                    }
-                }
+                DosageField(
+                    null,
+                    cancel = {
+                        //selectedDosage = null
+                    }, // Reset selected dosage
+                    addDosage = {
+                        addDosage(it)
+                    } // Add new dosage entry
+                )
             }
         }
     )
@@ -436,44 +424,53 @@ fun DosageField(
                 selectedTime = hour,
                 onTimeSelected = { hour = it},
                 modifier = Modifier
-                    .weight(2f) // Take up remaining space in the row
+                    .weight(1f) // Take up remaining space in the row
                     .padding(vertical = 8.dp) // Padding around the TimePicker
             )
+            //Column {
+//            Box(modifier = Modifier.padding(horizontal = 4.dp).padding(top = 7.dp).align(Alignment.CenterVertically)) {
+//                Icon(
+//                    imageVector = Icons.Sharp.Settings,
+//                    contentDescription = "Agregar dosis",
+//                    modifier = Modifier
+//                        .background(Color.Red)
+//                        .padding(10.dp)
+//                        .clickable {
+//                            hour = ""
+//                            quantity = ""
+//                            cancel()
+//                        }
+//                )
+//            }
 
-        }
-
-
-        Row(modifier = Modifier.fillMaxWidth()) {
-            if (hour.isNotEmpty() || quantity.isNotEmpty()) {
-                Button(
-                    onClick = {
-                        hour = ""
-                        quantity = ""
-                        cancel()
-                    },
+            Box(modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(top = 7.dp, start = 7.dp)) {
+                Icon(
+                    imageVector = Icons.Sharp.Add,
+                    contentDescription = "Select Time",
+                    tint = Color.White,
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(top = 2.dp) // Padding around the button
-                ) {
-                    Text("Cancelar")
-                }
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(10.dp)
+                        .clickable {
+                            if (quantity.isNotEmpty() && hour.isNotEmpty()) {
+                                addDosage(
+                                    Dosage(
+                                         0,
+                                         0,
+                                        quantity,
+                                        hour
+                                    )
+                                )
+                                hour = ""
+                                quantity = ""
+                            }
+                        }
+                )
             }
+           // }
 
-            // Add Dosage Button
-            Button(
-                onClick = {
-                    if (quantity.isNotEmpty() && hour.isNotEmpty()){
-                        addDosage(Dosage(dosage?.id ?: 0, dosage?.indicationId ?: 0, quantity, hour))
-                        hour = ""
-                        quantity = ""
-                    }
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 2.dp, start = 4.dp) // Padding around the button
-            ) {
-                Text("Agregar")
-            }
         }
     }
 

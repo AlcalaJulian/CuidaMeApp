@@ -49,16 +49,16 @@ fun DosageRow(dosage: Dosage, onSelectDosage: (Dosage) -> Unit, onDeleteClick: (
         )
 
         // Edit Icon with click effect
-        IconButton(
-            onClick = { onSelectDosage(dosage) },
-            modifier = Modifier.size(24.dp) // Set a fixed size for the icon
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Delete Dosage",
-                tint = Color.Yellow // Red color for delete action
-            )
-        }
+//        IconButton(
+//            onClick = { onSelectDosage(dosage) },
+//            modifier = Modifier.size(24.dp) // Set a fixed size for the icon
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.Edit,
+//                contentDescription = "Delete Dosage",
+//                tint = Color.Yellow // Red color for delete action
+//            )
+//        }
 
         // Delete Icon with click effect
         IconButton(

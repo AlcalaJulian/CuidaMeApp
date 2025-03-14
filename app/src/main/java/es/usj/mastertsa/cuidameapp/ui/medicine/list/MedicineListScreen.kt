@@ -12,13 +12,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
+import es.usj.mastertsa.cuidameapp.ui.indication.detail.DetailRow
 import es.usj.mastertsa.cuidameapp.ui.medicine.add.MedicationAddScreen
 import es.usj.mastertsa.cuidameapp.ui.shared.ErrorText
 import es.usj.mastertsa.cuidameapp.ui.shared.ListTopBar
@@ -29,20 +34,19 @@ import es.usj.mastertsa.cuidameapp.ui.shared.SwipeBox
 
 @Composable
 fun MedicineListScreen(
-    viewModel: MedicineListViewModel = viewModel(factory = MedicineListViewModel.factory(
-        LocalContext.current)),
-    navigateToDetail:(id: Long) -> Unit
-){
-
+    viewModel: MedicineListViewModel = viewModel(factory = MedicineListViewModel.factory(LocalContext.current)),
+    navigateToDetail: (id: Long) -> Unit
+) {
     val uiState = viewModel.uiState
     var showDialog by remember { mutableStateOf(false) }
+    var medicationToEdit by remember { mutableStateOf<Medicine?>(null) }
+
     LaunchedEffect(Unit) {
         viewModel.getAllMedications()
     }
 
     Scaffold(
-        topBar = {
-            ListTopBar("Lista de medicamentos", {showDialog =true})}
+        topBar = { ListTopBar("Lista de medicamentos", { showDialog = true }) }
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -57,11 +61,11 @@ fun MedicineListScreen(
                     ErrorText(message = uiState.error)
                 }
                 else -> {
-                    if (uiState.data.isEmpty()){
+                    if (uiState.data.isEmpty()) {
                         Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
                         ) {
                             Text(text = "No hay medicamentos registrados.")
                             Spacer(modifier = Modifier.height(16.dp))
@@ -75,21 +79,29 @@ fun MedicineListScreen(
                             }
                         }
 
-                    }else{
+                    } else {
                         MedicineList(
                             medications = uiState.data,
                             navigateToDetail = navigateToDetail,
                             onDelete = { id ->
                                 viewModel.deleteMedication(id)
+                            },
+                            onEdit = { medication ->
+                                medicationToEdit = medication
+                                showDialog = true
                             }
                         )
                     }
 
                     if (showDialog) {
-                        MedicationAddScreen(onDismiss = { showDialog = false }, onSuccess = {
-                            viewModel.getAllMedications()
-                            showDialog = false
-                        })
+                        MedicationAddScreen(
+                            onDismiss = { showDialog = false },
+                            onSuccess = {
+                                viewModel.getAllMedications()
+                                showDialog = false
+                            },
+                            existingMedicine = medicationToEdit // Pass the existing medicine to edit
+                        )
                     }
                 }
             }
@@ -102,7 +114,8 @@ fun MedicineListScreen(
 fun MedicineList(
     medications: List<Medicine>,
     navigateToDetail: (id: Long) -> Unit,
-    onDelete: (Long) -> Unit
+    onDelete: (Long) -> Unit,
+    onEdit: (Medicine) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -113,20 +126,22 @@ fun MedicineList(
                 medication = medication,
                 onClick = {
                     navigateToDetail(medication.id)
-                }
-            ) {
-                onDelete(medication.id)
-            }
+                },
+                onDelete = { onDelete(medication.id) },
+                onEdit = { onEdit(medication) } // Trigger the edit action
+            )
         }
     }
 }
+
 
 
 @Composable
 fun MedicationItem(
     medication: Medicine,
     onClick: () -> Unit,
-    onDelete: (Long) -> Unit
+    onDelete: (Long) -> Unit,
+    onEdit: (Medicine) -> Unit
 ) {
     // For managing the confirmation dialog visibility
     var showDialog by remember { mutableStateOf(false) }
@@ -135,9 +150,9 @@ fun MedicationItem(
         onDelete = {
             showDialog = true
         },
-        onEdit = { showDialog = true },
+        onEdit = { onEdit(medication) }, // Trigger edit when clicked
     ) {
-        //Display the medication item as a card
+        // Display the medication item as a card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -155,26 +170,45 @@ fun MedicationItem(
                     Text(
                         text = medication.name,
                         maxLines = 1,
-                        style = MaterialTheme.typography.bodyLarge
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.headlineLarge
                     )
-                    Text(text = medication.description, style = MaterialTheme.typography.bodySmall)
-                    Text(
-                        text = medication.administrationType.toString(),
-                        style = MaterialTheme.typography.bodySmall
-                    )
+
+                    DetailRow(modifier = Modifier, "Descripción:", medication.description)
+                    DetailRow(modifier = Modifier, "Vía:", medication.administrationType)
                 }
+                Icon(
+                    Icons.Default.Edit,
+                    tint = Color.Black,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .clickable { onEdit(medication) }
+                )
+                Icon(
+                    Icons.Default.Delete,
+                    tint = Color.Red,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .clickable {
+                            onDelete(medication.id)
+                        }
+                )
             }
         }
     }
-
 
     // Confirmation dialog
     if (showDialog) {
         DeleteConfirmDialog(
             message = "",
             ok = {
-            onDelete(medication.id)  // Perform the delete action
-            showDialog = false // Close the dialog after deletion
-        }, cancel = { showDialog = false })
+                onDelete(medication.id) // Perform the delete action
+                showDialog = false // Close the dialog after deletion
+            },
+            cancel = { showDialog = false }
+        )
     }
 }
+

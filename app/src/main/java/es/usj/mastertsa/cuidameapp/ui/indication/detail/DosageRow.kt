@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
@@ -35,6 +36,9 @@ fun DosageItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+        ),
         elevation = CardDefaults.elevatedCardElevation(12.dp),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -45,7 +49,7 @@ fun DosageItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
 
                 DetailRow(modifier = Modifier,"Cantidad:", dosage.quantity.toString())
                 DetailRow(modifier = Modifier,"Fecha:", dosage.specificDate.toString())
@@ -63,24 +67,26 @@ fun DosageItem(
 
                 Icon(
                     Icons.Default.CheckCircle,
+
                     tint = if (dosage.completed) Color.Green else Color.DarkGray,
-                    contentDescription = "",
-                    modifier = Modifier.clickable {
+                    contentDescription = "Completar dosis",
+                    modifier = Modifier
+                        .clickable {
                         if (!dosage.completed)
                             onComplete()
                     }
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Icon(
-                    Icons.Default.Delete,
-                    tint = Color.Red,
-                    contentDescription = "",
-                    modifier = Modifier.clickable {
-                        onDelete()
-                    }
-                )
+//                Spacer(modifier = Modifier.height(8.dp))
+//
+//                Icon(
+//                    Icons.Default.Delete,
+//                    tint = Color.Red,
+//                    contentDescription = "",
+//                    modifier = Modifier.clickable {
+//                        onDelete()
+//                    }
+//                )
 
 //                Button(
 //                    onClick = onDelete,

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -30,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -91,7 +93,13 @@ fun AddPatientDialog(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
+                    Button(
+                        colors = ButtonColors(
+                            containerColor = Color.Red, contentColor = Color.White,
+                            disabledContainerColor = Color.DarkGray,
+                            disabledContentColor = Color.Black
+                        ),
+                        onClick = onDismiss) {
                         Text("Cancelar")
                     }
                     Spacer(modifier = Modifier.width(8.dp))
@@ -119,7 +127,7 @@ fun AddPatientDialog(
                         if (uiState.loading) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         } else {
-                            Text("Agregar")
+                            Text("Guardar")
                         }
                     }
                 }

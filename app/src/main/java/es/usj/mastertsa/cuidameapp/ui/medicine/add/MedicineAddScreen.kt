@@ -1,5 +1,6 @@
 package es.usj.mastertsa.cuidameapp.ui.medicine.add
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -23,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -39,11 +42,12 @@ fun MedicationAddScreen(
         )
     ),
     onDismiss: () -> Unit,
-    onSuccess: () -> Unit
+    onSuccess: () -> Unit,
+    existingMedicine: Medicine? = null
 ) {
-    var name by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var administrationType by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf(existingMedicine?.name ?: "") }
+    var description by remember { mutableStateOf(existingMedicine?.description ?: "") }
+    var administrationType by remember { mutableStateOf(existingMedicine?.administrationType ?: "") }
 
     val administrationTypes = listOf("Oral", "Intrabenosa", "Muscular")
 
@@ -82,8 +86,15 @@ fun MedicationAddScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Cancelar")
+                    Button(
+                        onClick = onDismiss,
+                        colors = ButtonColors(
+                            containerColor = Color.Red, contentColor = Color.White,
+                            disabledContainerColor = Color.DarkGray,
+                            disabledContentColor = Color.Black
+                        )
+                        ) {
+                        Text("Cancelar", color = Color.White)
                     }
                     Spacer(modifier = Modifier.width(8.dp))
                     Button(
@@ -93,7 +104,7 @@ fun MedicationAddScreen(
                             ) {
                                 viewModel.addMedication(
                                     Medicine(
-                                        id = 0L,
+                                        id = existingMedicine?.id ?: 0L,
                                         description = description,
                                         name = name,
                                         administrationType = administrationType
@@ -106,7 +117,7 @@ fun MedicationAddScreen(
                         if (uiState.loading) {
                             CircularProgressIndicator(modifier = Modifier.size(24.dp))
                         } else {
-                            Text("Agregar")
+                            Text("Guardar")
 
                         }
                     }

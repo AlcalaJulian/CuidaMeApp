@@ -82,7 +82,7 @@ class IndicationDetailViewModel(
     }
 
     // Fetch the dosages for a given indication
-    fun getDosages(indicationId: Long) {
+    private fun getDosages(indicationId: Long) {
         viewModelScope.launch {
             try {
                 val dosages = getDosagesForIndicationUseCase.execute(indicationId)
