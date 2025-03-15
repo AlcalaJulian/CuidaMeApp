@@ -20,7 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 @SuppressLint("RestrictedApi")
 @Composable
 fun NavigationBottomBar(navController: NavController, onClickRoute:(currentRoute: Any)-> Unit){
-    BottomAppBar(containerColor = MaterialTheme.colorScheme.primary, contentColor = Color.White) {
+    BottomAppBar(containerColor = Color.White, contentColor = Color.White) {
         val navBackState by navController.currentBackStackEntryAsState()
         val currentDestination = navBackState?.destination
 
@@ -41,12 +41,12 @@ fun NavigationBottomBar(navController: NavController, onClickRoute:(currentRoute
                 },
                 colors = NavigationBarItemColors(
                     selectedIconColor = Color.Black,
-                    selectedTextColor = Color.White,
+                    selectedTextColor = Color.Black,
                     selectedIndicatorColor = Color.White,
-                    unselectedIconColor = Color.Black,
-                    unselectedTextColor = Color.Black,
-                    disabledIconColor = Color.DarkGray,
-                    disabledTextColor = Color.DarkGray
+                    unselectedIconColor = Color.DarkGray,
+                    unselectedTextColor = Color.DarkGray,
+                    disabledIconColor = Color.LightGray,
+                    disabledTextColor = Color.LightGray
                 ),
                 alwaysShowLabel = true
             )

@@ -222,7 +222,7 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                     password = ""
                     confirmPassword = ""
 
-                    isLogin.not()
+                    isLogin = !isLogin
                 }) {
                     Text(
                         if (isLogin) "No tienes una cuenta? Registrar" else "Tengo una cuenta",

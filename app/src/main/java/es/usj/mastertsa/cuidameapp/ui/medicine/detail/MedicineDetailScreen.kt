@@ -69,7 +69,7 @@ fun MedicineDetailContent(medication: MedicineDetail) {
         Spacer(modifier = Modifier.padding(16.dp))
         Text("Descripcion:",
             modifier = Modifier.padding(bottom = 10.dp),
-            style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold))
+            style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold))
         Text(medication.description)
     }
 }

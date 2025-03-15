@@ -29,11 +29,11 @@ fun ListTopBar(title: String, showDialog:()-> Unit) {
             }
         },
         colors = TopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = Color.White,
             scrolledContainerColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = Color.White,
-            titleContentColor = Color.White,
-            actionIconContentColor = Color.White
+            navigationIconContentColor = Color.Black,
+            titleContentColor = Color.Black,
+            actionIconContentColor = Color.Black
         ),
         modifier = Modifier
             .padding(12.dp)

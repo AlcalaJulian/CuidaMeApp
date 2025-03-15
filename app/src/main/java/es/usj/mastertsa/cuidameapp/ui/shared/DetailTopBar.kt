@@ -35,14 +35,13 @@ fun DetailTopBar(title: String, goBack: () -> Unit) {
             }
         },
         colors = TopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            scrolledContainerColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = Color.White,
-            titleContentColor = Color.White,
-            actionIconContentColor = Color.White
+            containerColor = Color.White,
+            scrolledContainerColor = Color.White,
+            navigationIconContentColor = Color.Black,
+            titleContentColor = Color.Black,
+            actionIconContentColor = Color.Black
         ),
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.primary)
             .padding(12.dp)
             .height(56.dp) // You can adjust this to change the height of the TopAppBar
     )
