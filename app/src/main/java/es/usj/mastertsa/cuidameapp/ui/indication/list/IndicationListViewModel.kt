@@ -58,19 +58,6 @@ class IndicationListViewModel(
 
     }
 
-//    fun addPatient(indication: Indication, ) {
-//        indicationUiState = indicationUiState.copy(loading = true, error = null, success = false)
-//        viewModelScope.launch {
-//            try {
-//                addAnIndicationToPatientUseCase.execute(indication, emptyList())
-//                indicationUiState = indicationUiState.copy(loading = false, success = true)
-//                getAllIndications()
-//            } catch (exception: Exception) {
-//                indicationUiState = indicationUiState.copy(loading = false, error = exception.message)
-//            }
-//        }
-//    }
-
     fun getAllIndications(){
         indicationUiState = indicationUiState.copy(loading = true)
         viewModelScope.launch {
@@ -115,7 +102,6 @@ class IndicationListViewModel(
     private fun generateRecurrences(indication: Indication, dosages: List<Dosage>): List<Recurrence> {
         val recurrences = mutableListOf<Recurrence>()
         val startDate = indication.startDate
-        //val startHour = indication.hour
         val dosage = indication.dosage
         val recurrencePattern =
             indication.recurrenceId.lowercase(Locale.getDefault()) // e.g., "every 4 hours", "every day", "weekly"
@@ -126,11 +112,8 @@ class IndicationListViewModel(
                 //val interval = recurrencePattern.split(" ")[1].toIntOrNull() ?: 1
                 val recurrenceType = recurrencePattern.split(" ")[1]
 
-                // Generate recurrences based on the interval
                 var currentDate = startDate
-                //var currentHour = startHour
 
-                // Loop to generate recurrences based on the interval and type
                 for (i in 1..indication.dosage) {
 
                     dosages.forEach {
@@ -144,7 +127,6 @@ class IndicationListViewModel(
                         )
                         recurrences.add(recurrence)
                     }
-
 
                     // Calculate next recurrence based on the recurrence type
                     when (recurrenceType) {
@@ -160,23 +142,17 @@ class IndicationListViewModel(
                     }
                 }
             }
-            else -> {
-                // Handle other recurrence patterns here if needed
-            }
         }
         return recurrences
     }
 
     // Function to increment date by days (simple logic for this example)
     private fun incrementDateByDays(date: String, days: Int): String {
-        // You can use a date manipulation library or implement your own date logic
-        // This is just a simple placeholder for date increment
         val dateParts = date.split("-")
         val year = dateParts[2].toInt()
         val month = dateParts[1].toInt()
         val day = dateParts[0].toInt() + days
 
-        // You should implement proper date validation, this is simplified
         return "${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-$year"
     }
 
@@ -190,7 +166,6 @@ class IndicationListViewModel(
 
     // Function to increment date by weeks
     private fun incrementDateByWeeks(date: String, weeks: Int): String {
-        // Increment date by weeks, same logic as increment days
         return incrementDateByDays(date, weeks * 7)
     }
 

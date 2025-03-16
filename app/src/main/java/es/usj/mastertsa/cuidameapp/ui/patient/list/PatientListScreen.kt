@@ -54,7 +54,9 @@ fun PatientListScreen(
         ) {
             when {
                 uiState.loading -> LoadingIndicator()
-                uiState.error != null -> ErrorText(message = uiState.error)
+                uiState.error != null -> {
+                    ErrorText(message = uiState.error)
+                }
                 else -> {
                     PatientList(
                         patients = uiState.data,

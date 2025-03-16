@@ -11,5 +11,4 @@ data class IndicationListUiState(
     val success: Boolean = false,
     val patientList: List<Patient> = emptyList(),
     val medicationsList: List<Medicine> = emptyList(),
-
     )
