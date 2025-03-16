@@ -104,7 +104,6 @@ class IndicationListViewModel(
                 val recurrences = generateRecurrences(indication, dosis)
                 addAnIndicationToPatientUseCase.execute(indication, recurrences)
                 indicationUiState = indicationUiState.copy(loading = false)
-                getAllIndications()
             } catch (e: Exception) {
                 indicationUiState = indicationUiState.copy(error = "Error al guardar la indicación.", loading = false)
             }

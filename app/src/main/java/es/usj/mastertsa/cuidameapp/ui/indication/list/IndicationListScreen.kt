@@ -147,9 +147,8 @@ fun IndicationListScreen(
             onDismiss = { showAddIndicationDialog = false },
             onConfirm = { newIndication, dosages ->
                 viewModel.addIndicationAndRecurrences(newIndication, dosages)
-                if(viewModel.indicationUiState.error != null) {
                     showAddIndicationDialog = false
-                }
+                    viewModel.getAllIndications()
             },
             patients = uiState.patientList,
             medications = uiState.medicationsList
@@ -278,7 +277,8 @@ fun AddIndicationDialog(
                         )
                         onConfirm(
                             indication,
-                            dosages.filter { it.hour.isNotEmpty() && it.quantity.isNotEmpty() })
+                            dosages.filter { it.hour.isNotEmpty() && it.quantity.isNotEmpty()
+                            })
                     }
                 }
             ) {

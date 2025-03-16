@@ -1,6 +1,9 @@
 package es.usj.mastertsa.cuidameapp.ui.indication.add
 
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,18 +20,21 @@ import kotlinx.coroutines.launch
 
 class MedicationAddViewModel(private val addAnIndicationToPatientUseCase: AddAnIndicationToPatientUseCase): ViewModel() {
 
-    private val _indications = MutableLiveData<List<Indication>>()
-    val indications: LiveData<List<Indication>> get() = _indications
-
-    private val _recurrences = MutableLiveData<List<Recurrence>>()
-    val recurrences: LiveData<List<Recurrence>> get() = _recurrences
+    var uiState by mutableStateOf(MedicationAddUiState())
+        private set
 
     // Add indication and its recurrences
     fun addIndicationAndRecurrences(indication: Indication, dosages: List<Dosage>) {
         viewModelScope.launch {
             // Generate recurrences based on the recurrence type
-            val recurrences = generateRecurrences(indication, dosages)
-            addAnIndicationToPatientUseCase.execute(indication, recurrences)
+            try {
+                val recurrences = generateRecurrences(indication, dosages)
+                addAnIndicationToPatientUseCase.execute(indication, recurrences)
+                uiState = uiState.copy(loading = false, success = true)
+            }catch (ex: Exception){
+                uiState = uiState.copy(loading = false, error = "Hubo un error al guardar las indicaciones")
+            }
+
         }
     }
 
