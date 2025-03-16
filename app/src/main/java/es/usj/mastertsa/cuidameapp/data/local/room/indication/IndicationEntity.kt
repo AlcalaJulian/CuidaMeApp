@@ -12,14 +12,12 @@ import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientEntity
         ForeignKey(
             entity = PatientEntity::class,
             parentColumns = ["id"],
-            childColumns = ["patientId"],
-            onDelete = ForeignKey.CASCADE
+            childColumns = ["patientId"]
         ),
         ForeignKey(
             entity = MedicineEntity::class,
             parentColumns = ["id"],
-            childColumns = ["medicineId"],
-            onDelete = ForeignKey.CASCADE
+            childColumns = ["medicineId"]
         )
     ]
 )

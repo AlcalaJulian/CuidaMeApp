@@ -10,8 +10,7 @@ import androidx.room.PrimaryKey
         ForeignKey(
             entity = IndicationEntity::class,
             parentColumns = ["id"],
-            childColumns = ["indicationId"],
-            onDelete = ForeignKey.CASCADE
+            childColumns = ["indicationId"]
         )
     ]
 )

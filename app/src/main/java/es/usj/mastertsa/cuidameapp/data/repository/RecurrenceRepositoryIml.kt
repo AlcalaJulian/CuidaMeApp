@@ -30,7 +30,6 @@ class RecurrenceRepositoryIml(private val db: PatientDatabase): RecurrenceReposi
         val entities = recurrences.map { it.toEntity() }
 
 
-
         entities.forEach {
             val id = db.getRecurrenceDao().insertRecurrence(it)
             recurrencesCollection.document(id.toString()).set(it.copy(id = id)).await()
@@ -63,8 +62,8 @@ class RecurrenceRepositoryIml(private val db: PatientDatabase): RecurrenceReposi
                 ?.mapNotNull { it.toObject(RecurrenceEntity::class.java) }
                 ?.let { recurrencesFromFirestore ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        db.getRecurrenceDao().deleteAllRecurrences()
-                        db.getRecurrenceDao().insertRecurrences(recurrencesFromFirestore)
+//                        db.getRecurrenceDao().deleteAllRecurrences()
+//                        db.getRecurrenceDao().insertRecurrences(recurrencesFromFirestore)
                     }
                 }
         }
