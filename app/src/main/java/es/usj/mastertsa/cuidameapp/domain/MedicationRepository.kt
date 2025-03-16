@@ -1,11 +1,12 @@
 package es.usj.mastertsa.cuidameapp.domain
 
-import es.usj.mastertsa.cuidameapp.domain.medication.Medication
-import es.usj.mastertsa.cuidameapp.domain.medication.MedicationDetail
+import es.usj.mastertsa.cuidameapp.domain.medicine.Medicine
+import es.usj.mastertsa.cuidameapp.domain.medicine.MedicineDetail
 
 interface MedicationRepository {
-    suspend fun getAllMedications(): List<Medication>
-    suspend fun getMedicationById(id: Long): MedicationDetail
+    suspend fun getAllMedications(): List<Medicine>
+    suspend fun getMedicationById(id: Long): MedicineDetail
     suspend fun deleteMedicationById(id: Long)
-    suspend fun addMedication(medication: Medication)
+    suspend fun addMedication(medication: Medicine)
+    fun syncMedicationsFromFirestore()
 }

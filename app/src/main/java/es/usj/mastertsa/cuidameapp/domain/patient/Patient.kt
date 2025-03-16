@@ -3,13 +3,9 @@ package es.usj.mastertsa.cuidameapp.domain.patient
 data class Patient(
     val id: Long,
     val identification: String,
-    val identificationType: Int,
+    val identificationType: String,
     val firstName: String,
     val lastName: String,
     val birthDate: String,
     val emergencyContact: String
 )
-
-enum class AdministrationType{
-    Oral, Intravenous, Intramuscular, Subcutaneous, Rectal, Vaginal
-}

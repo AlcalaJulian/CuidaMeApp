@@ -1,5 +1,6 @@
 package es.usj.mastertsa.cuidameapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,6 +25,7 @@ import es.usj.mastertsa.cuidameapp.ui.theme.CuidaMeAppTheme
 
 class MainActivity : ComponentActivity() {
 
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -38,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = { SnackbarHost(snackBarHostState) },
 
                     bottomBar = {
-                        if (authViewModel.user != null){
+                        if (authViewModel.uiState.user != null){
                             NavigationBottomBar(navController, onClickRoute = { route ->
                                 navController.navigate(route) {
                                     popUpTo(navController.graph.findStartDestination().id) {

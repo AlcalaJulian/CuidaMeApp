@@ -36,7 +36,6 @@ import es.usj.mastertsa.cuidameapp.domain.share.Util
 import es.usj.mastertsa.cuidameapp.ui.shared.ErrorText
 import es.usj.mastertsa.cuidameapp.ui.shared.LoadingIndicator
 
-
 @Composable
 fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
     var email by remember { mutableStateOf("") }
@@ -48,10 +47,12 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
     var isConfirmPasswordVisible by remember { mutableStateOf(false) }
     var isLogin by remember { mutableStateOf(true) }
 
+    // Validation error states
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var nameError by remember { mutableStateOf<String?>(null) }
     var lastNameError by remember { mutableStateOf<String?>(null) }
+    var confirmPasswordError by remember { mutableStateOf<String?>(null) }
 
     val authUiState = authViewModel.uiState
 
@@ -70,17 +71,17 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 Text(
-                    text = if(isLogin) "Login" else "Regisrer",
+                    text = if (isLogin) "Login" else "Register",
                     style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier
-                        .padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 24.dp)
                 )
 
-                if (!isLogin){
+                // Name and LastName validation for Register only
+                if (!isLogin) {
                     OutlinedTextField(
                         value = name,
                         onValueChange = { name = it },
-                        isError = Util.validateName(name),
+                        isError = nameError != null,
                         label = { Text("Primer nombre") },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
@@ -89,39 +90,51 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                             Icon(Icons.Default.Person, contentDescription = "Person Icon")
                         }
                     )
+                    if (nameError != null) {
+                        Text(text = nameError!!, color = MaterialTheme.colorScheme.error)
+                    }
+
                     OutlinedTextField(
                         value = lastName,
                         onValueChange = { lastName = it },
-                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
-                        isError = Util.validateName(lastName),
-                        label = { Text("Secundo nombre") },
+                        isError = lastNameError != null,
+                        label = { Text("Apellidos") },
                         modifier = Modifier.fillMaxWidth(),
+                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Text),
                         singleLine = true,
                         leadingIcon = {
                             Icon(Icons.Default.Person, contentDescription = "Person Icon")
                         }
                     )
+                    if (lastNameError != null) {
+                        Text(text = lastNameError!!, color = MaterialTheme.colorScheme.error)
+                    }
                 }
 
+                // Email validation
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
                     keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                    label = { Text("Email Address") },
-                    isError = Util.validateEmail(email),
+                    label = { Text("Email") },
+                    isError = emailError != null,
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     leadingIcon = {
                         Icon(Icons.Default.Email, contentDescription = "Email Icon")
                     }
                 )
+                if (emailError != null) {
+                    Text(text = emailError!!, color = MaterialTheme.colorScheme.error)
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Password validation
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
+                    label = { Text("Contraseña") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     leadingIcon = {
@@ -137,14 +150,18 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                         }
                     }
                 )
+                if (passwordError != null) {
+                    Text(text = passwordError!!, color = MaterialTheme.colorScheme.error)
+                }
 
+                // Confirm Password validation
                 if (!isLogin) {
                     Spacer(modifier = Modifier.height(16.dp))
 
                     OutlinedTextField(
                         value = confirmPassword,
                         onValueChange = { confirmPassword = it },
-                        label = { Text("Confirm password") },
+                        label = { Text("Confirmar contraseña") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true,
                         leadingIcon = {
@@ -152,9 +169,7 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                         },
                         visualTransformation = if (isConfirmPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         trailingIcon = {
-                            IconButton(onClick = {
-                                isConfirmPasswordVisible = !isConfirmPasswordVisible
-                            }) {
+                            IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
                                 Icon(
                                     imageVector = if (isConfirmPasswordVisible) Icons.Default.Search else Icons.Default.Search,
                                     contentDescription = "Toggle password visibility"
@@ -162,36 +177,40 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                             }
                         }
                     )
+                    if (confirmPasswordError != null) {
+                        Text(text = confirmPasswordError!!, color = MaterialTheme.colorScheme.error)
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Submit Button
                 Button(
                     onClick = {
-                        if (isLogin){
-                            authViewModel.login(email, password)
-                        }else{
-                            authViewModel.register(email, password, name, lastName)
-                        }},
+
+                        emailError = if (Util.validateEmail(email)) null else "Email invalido"
+                        passwordError = if (password.length >= 6) null else "La contraseña debe tener minimo 6 caracteres"
+
+
+
+                        //if (emailError == null && passwordError == null && nameError == null && lastNameError == null && confirmPasswordError == null) {
+                            if (isLogin) {
+                                if (emailError == null && passwordError == null)
+                                    authViewModel.login(email, password)
+                            } else {
+                                nameError = if (Util.validateName(name)) null else "Campo requerido"
+                                lastNameError = if (Util.validateName(lastName)) null else "Campo requiredo"
+                                confirmPasswordError = if (confirmPassword != password) "No coinciden" else null
+
+                                if(nameError == null && lastNameError == null && confirmPasswordError == null)
+                                   authViewModel.register(email, password, name, lastName)
+                            }
+                        //}
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text(text = "Enviar", style = MaterialTheme.typography.bodySmall)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (authUiState.error != null) {
-//                    Text(
-//                        text = authUiState.error,
-//                        style = MaterialTheme.typography.bodySmall,
-//                    )
-//                    Text(
-//                        text = authUiState.error,
-//                        color = MaterialTheme.colorScheme.error,
-//                        style = MaterialTheme.typography.bodySmall,
-//                        modifier = Modifier.padding(top = 8.dp)
-//                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -206,10 +225,12 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                     isLogin = !isLogin
                 }) {
                     Text(
-                        if(isLogin) "Don't have an account? Sign up" else "I have an account",
+                        if (isLogin) "No tienes una cuenta? Registrar" else "Tengo una cuenta",
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
+
+                Spacer(modifier = Modifier)
             }
         }
     }

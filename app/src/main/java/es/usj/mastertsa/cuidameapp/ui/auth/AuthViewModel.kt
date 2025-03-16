@@ -26,8 +26,8 @@ class AuthViewModel(
     private val saveLocalUserUseCase: SaveLocalUserUseCase
 ) : ViewModel() {
 
-    var user: FirebaseUser? = null
-        private set
+//    var user: FirebaseUser? = null
+//        private set
 
     var uiState by mutableStateOf(AuthUiState())
         private set
@@ -37,8 +37,10 @@ class AuthViewModel(
             try {
                 uiState = uiState.copy(isLoading = true)
                 val loggedInUser = loginUseCase.execute(email, password)
-                uiState = uiState.copy(isLoading = false, success = loggedInUser != null)
-                user = loggedInUser
+                if (loggedInUser != null) {
+                    uiState = uiState.copy(user = loggedInUser, success = true)
+                }
+
             }catch (ex: Exception){
                 uiState = uiState.copy(isLoading = false, error = ex.message)
             }
@@ -56,8 +58,8 @@ class AuthViewModel(
                 if (registeredUser != null) {
                     saveLocalUserUseCase.execute(registeredUser.uid, name, lastName)
                 }
-                uiState = uiState.copy(isLoading = false, success = true)
-                user = registeredUser
+                uiState = uiState.copy(success = true, user = registeredUser)
+
             }catch (ex: Exception){
                 uiState = uiState.copy(isLoading = false, error = ex.message)
             }
@@ -67,7 +69,7 @@ class AuthViewModel(
     fun logout() {
         viewModelScope.launch {
             logoutUseCase.execute()
-            user = null
+            uiState = uiState.copy(user = null)
         }
     }
 

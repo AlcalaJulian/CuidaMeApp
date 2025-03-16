@@ -1,6 +1,7 @@
 package es.usj.mastertsa.cuidameapp.ui.shared
 
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -9,6 +10,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,11 +29,19 @@ fun DetailTopBar(title: String, goBack: () -> Unit) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "Back",
-                    tint = Color.Black
+                    tint = Color.White
                 )
             }
         },
+        colors = TopAppBarColors(
+            containerColor = Color.White,
+            scrolledContainerColor = Color.White,
+            navigationIconContentColor = Color.Black,
+            titleContentColor = Color.Black,
+            actionIconContentColor = Color.Black
+        ),
         modifier = Modifier
+            .padding(12.dp)
             .height(56.dp) // You can adjust this to change the height of the TopAppBar
     )
 }

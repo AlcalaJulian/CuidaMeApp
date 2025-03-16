@@ -9,33 +9,43 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.IndicationRepositoryImpl
-import es.usj.mastertsa.cuidameapp.data.repository.MedicationRepositoryImpl
+import es.usj.mastertsa.cuidameapp.data.repository.MedicineRepositoryImpl
 import es.usj.mastertsa.cuidameapp.data.repository.PatientRepositoryImpl
+import es.usj.mastertsa.cuidameapp.data.repository.RecurrenceRepositoryIml
 import es.usj.mastertsa.cuidameapp.domain.indication.AddAnIndicationToPatientUseCase
 import es.usj.mastertsa.cuidameapp.domain.indication.DeleteIndicationUseCase
+import es.usj.mastertsa.cuidameapp.domain.indication.Dosage
 import es.usj.mastertsa.cuidameapp.domain.indication.GetAllIndicationsUseCase
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
-import es.usj.mastertsa.cuidameapp.domain.medication.GetAllMedicationsUseCase
+import es.usj.mastertsa.cuidameapp.domain.indication.Recurrence
+import es.usj.mastertsa.cuidameapp.domain.indication.SyncIndicationsUseCase
+import es.usj.mastertsa.cuidameapp.domain.indication.SyncRecurrenceUseCase
+import es.usj.mastertsa.cuidameapp.domain.medicine.GetAllMedicinesUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.GetAllPatientsUseCase
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 class IndicationListViewModel(
     private val getAllIndicationsUseCase: GetAllIndicationsUseCase,
     private val addAnIndicationToPatientUseCase: AddAnIndicationToPatientUseCase,
     private val getAllPatientsUseCase: GetAllPatientsUseCase,
-    private val getAllMedicationsUseCase: GetAllMedicationsUseCase,
-    private val deleteIndicationUseCase: DeleteIndicationUseCase
+    private val getAllMedicationsUseCase: GetAllMedicinesUseCase,
+    private val deleteIndicationUseCase: DeleteIndicationUseCase,
+    private val syncIndicationsUseCase: SyncIndicationsUseCase,
+    private val syncRecurrenceUseCase: SyncRecurrenceUseCase
 ): ViewModel() {
-    var indications by mutableStateOf(IndicationListUiState())
+    var indicationUiState by mutableStateOf(IndicationListUiState())
         private set
 
     fun getAllMedications(){
         viewModelScope.launch {
             try {
+                syncIndicationsUseCase.execute()
+                syncRecurrenceUseCase.execute()
                 val useCaseGetAllMedications = getAllMedicationsUseCase.execute()
-                indications = indications.copy(medicationsList = useCaseGetAllMedications, loading = false)
+                indicationUiState = indicationUiState.copy(medicationsList = useCaseGetAllMedications, loading = false)
             } catch(exception:Exception) {
-                indications = indications.copy(error = exception.message, loading = false)
+                indicationUiState = indicationUiState.copy(error = exception.message, loading = false)
             }
 
         }
@@ -45,35 +55,23 @@ class IndicationListViewModel(
         viewModelScope.launch {
             try {
                 val useCaseGetAllPatients = getAllPatientsUseCase.execute()
-                indications = indications.copy(patientList = useCaseGetAllPatients, loading = false)
+                indicationUiState = indicationUiState.copy(patientList = useCaseGetAllPatients, loading = false)
             } catch(exception:Exception) {
-                indications = indications.copy(error = exception.message, loading = false)
+                indicationUiState = indicationUiState.copy(error = exception.message, loading = false)
             }
 
         }
 
-    }
-    fun addPatient(indication: Indication) {
-        indications = indications.copy(loading = true, error = null, success = false)
-        viewModelScope.launch {
-            try {
-                addAnIndicationToPatientUseCase.execute(indication = indication)
-                indications = indications.copy(loading = false, success = true)
-                getAllIndications()
-            } catch (exception: Exception) {
-                indications = indications.copy(loading = false, error = exception.message)
-            }
-        }
     }
 
     fun getAllIndications(){
-        indications = indications.copy(loading = true)
+        indicationUiState = indicationUiState.copy(loading = true)
         viewModelScope.launch {
             try {
                 val useCaseGetAllIndications = getAllIndicationsUseCase.execute()
-                indications = indications.copy(data = useCaseGetAllIndications, loading = false)
+                indicationUiState = indicationUiState.copy(data = useCaseGetAllIndications, loading = false)
             } catch(exception:Exception) {
-                indications = indications.copy(error = exception.message, loading = false)
+                indicationUiState = indicationUiState.copy(error = exception.message, loading = false)
             }
 
         }
@@ -83,10 +81,98 @@ class IndicationListViewModel(
         viewModelScope.launch {
             try {
                 deleteIndicationUseCase.execute(id)
+                indicationUiState = indicationUiState.copy(loading = false, data = indicationUiState.data.filterNot { it.id == id })
             } catch (e: Exception) {
-                indications = indications.copy(error = "Failed to delete indication")
+                indicationUiState = indicationUiState.copy(error = "Failed to delete indication")
             }
         }
+    }
+
+    // Add indication and its recurrences
+    fun addIndicationAndRecurrences(indication: Indication, dosis: List<Dosage>) {
+        viewModelScope.launch {
+            try {
+                indicationUiState = indicationUiState.copy(loading = true)
+                // Generate recurrences based on the recurrence type
+                val recurrences = generateRecurrences(indication, dosis)
+                addAnIndicationToPatientUseCase.execute(indication, recurrences)
+                indicationUiState = indicationUiState.copy(loading = false)
+            } catch (e: Exception) {
+                indicationUiState = indicationUiState.copy(error = "Error al guardar la indicación.", loading = false)
+            }
+
+        }
+    }
+
+    // Generate recurrences based on indication's recurrence pattern
+    private fun generateRecurrences(indication: Indication, dosages: List<Dosage>): List<Recurrence> {
+        val recurrences = mutableListOf<Recurrence>()
+        val startDate = indication.startDate
+        val dosage = indication.dosage
+        val recurrencePattern =
+            indication.recurrenceId.lowercase(Locale.getDefault()) // e.g., "every 4 hours", "every day", "weekly"
+
+        // Logic for calculating recurrences
+        when {
+            recurrencePattern.contains("cada") -> {
+                //val interval = recurrencePattern.split(" ")[1].toIntOrNull() ?: 1
+                val recurrenceType = recurrencePattern.split(" ")[1]
+
+                var currentDate = startDate
+
+                for (i in 1..indication.dosage) {
+
+                    dosages.forEach {
+                        val recurrence = Recurrence(
+                            indicationId = indication.id,
+                            specificDate = currentDate,
+                            completed = false,
+                            id = 0L,
+                            hour = it.hour,
+                            quantity = it.quantity.toInt()
+                        )
+                        recurrences.add(recurrence)
+                    }
+
+                    // Calculate next recurrence based on the recurrence type
+                    when (recurrenceType) {
+                        "día" -> {
+                            currentDate = incrementDateByDays(currentDate, 1)
+                        }
+//                        "hora" -> {
+//                            currentHour = incrementHourBy(currentHour, interval)
+//                        }
+                        "semana" -> {
+                            currentDate = incrementDateByWeeks(currentDate, 1)
+                        }
+                    }
+                }
+            }
+        }
+        return recurrences
+    }
+
+    // Function to increment date by days (simple logic for this example)
+    private fun incrementDateByDays(date: String, days: Int): String {
+        val dateParts = date.split("-")
+        val year = dateParts[2].toInt()
+        val month = dateParts[1].toInt()
+        val day = dateParts[0].toInt() + days
+
+        return "${day.toString().padStart(2, '0')}-${month.toString().padStart(2, '0')}-$year"
+    }
+
+    // Function to increment time by hours (simple placeholder for time manipulation)
+    private fun incrementHourBy(time: String, hoursToAdd: Int): String {
+        val timeParts = time.split(":")
+        val hour = timeParts[0].toInt()
+        val newHour = (hour + hoursToAdd) % 24
+        return "$newHour:${timeParts[1]}"
+    }
+
+    // Function to increment date by weeks
+    private fun incrementDateByWeeks(date: String, weeks: Int): String {
+        return incrementDateByDays(date, weeks * 7)
     }
 
     companion object {
@@ -98,20 +184,28 @@ class IndicationListViewModel(
                 val patientRepositoryImpl = PatientRepositoryImpl(
                     db = PatientDatabase.provideDatabase(context)
                 )
-                val medicationsRepositoryImpl = MedicationRepositoryImpl(
+                val medicationsRepositoryImpl = MedicineRepositoryImpl(
                     db = PatientDatabase.provideDatabase(context)
                 )
+
+                val recurrenceRepository = RecurrenceRepositoryIml(PatientDatabase.provideDatabase(context))
                 val getAllIndicationsUseCase = GetAllIndicationsUseCase(indicationRepositoryImpl)
-                val addAnIndicationToPatientUseCase = AddAnIndicationToPatientUseCase(indicationRepositoryImpl)
+
+                val addAnIndicationToPatientUseCase = AddAnIndicationToPatientUseCase(indicationRepositoryImpl, recurrenceRepository)
                 val getAllPatientsUseCase = GetAllPatientsUseCase(patientRepositoryImpl)
-                val getAllMedicationsUseCase = GetAllMedicationsUseCase(medicationsRepositoryImpl)
+                val getAllMedicationsUseCase = GetAllMedicinesUseCase(medicationsRepositoryImpl)
                 val deleteUseCase = DeleteIndicationUseCase(indicationRepositoryImpl)
+                var syncRecurrenceUseCase = SyncRecurrenceUseCase(recurrenceRepository)
+                var syncIndicationUseCase = SyncIndicationsUseCase(indicationRepositoryImpl)
+
                 return IndicationListViewModel(
                     getAllIndicationsUseCase,
                     addAnIndicationToPatientUseCase,
                     getAllPatientsUseCase,
                     getAllMedicationsUseCase,
-                    deleteUseCase
+                    deleteUseCase,
+                    syncIndicationUseCase,
+                    syncRecurrenceUseCase
                 ) as T
             }
         }

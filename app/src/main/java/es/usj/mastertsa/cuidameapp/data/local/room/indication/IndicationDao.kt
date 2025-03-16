@@ -23,7 +23,7 @@ interface IndicationDao {
     suspend fun getIndicationByPatientId(id: Long): List<IndicationDetailView>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertIndication(indication: IndicationEntity)
+    suspend fun insertIndication(indication: IndicationEntity):Long
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertIndications(list: List<IndicationEntity>)
@@ -37,7 +37,7 @@ interface IndicationDao {
     @Query("DELETE FROM IndicationRoom")
     suspend fun deleteAllIndications()
 
-    @Query("SELECT * FROM IndicationDetailView WHERE medicationId = :medicationId")
+    @Query("SELECT * FROM IndicationDetailView WHERE medicineId = :medicationId")
     fun getIndicationsByMedicationId(medicationId: Long): Flow<List<IndicationDetailView>>
 
     @Query("SELECT COUNT(*) FROM IndicationRoom")

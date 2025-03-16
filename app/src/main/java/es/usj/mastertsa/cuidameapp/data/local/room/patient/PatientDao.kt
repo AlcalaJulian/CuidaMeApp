@@ -11,16 +11,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface PatientDao {
 
-    @Query("SELECT * FROM PatientRoom")
+    @Query("SELECT DISTINCT * FROM PatientRoom ORDER BY id ASC")
     fun getAllPatients(): Flow<List<PatientEntity>>
+
 
     @Query("SELECT * FROM PatientRoom WHERE id = :id")
     suspend fun getPatientById(id: Long): PatientEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPatient(patient: PatientEntity)
+    suspend fun insertPatient(patient: PatientEntity): Long
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPatients(list: List<PatientEntity>)
 
     @Update
