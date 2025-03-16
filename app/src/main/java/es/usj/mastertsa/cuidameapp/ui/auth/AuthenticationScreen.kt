@@ -54,7 +54,7 @@ fun AuthenticationScreen(
 //        CustomeButton("Login with gmail", R.drawable.gmaillogo)
 //        Spacer(modifier = Modifier.height(8.dp))
 //        CustomeButton("Login with facebook", R.drawable.facebooklogo)
-//        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 

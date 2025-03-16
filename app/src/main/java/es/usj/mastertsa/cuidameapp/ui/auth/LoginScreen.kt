@@ -198,9 +198,9 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                                 if (emailError == null && passwordError == null)
                                     authViewModel.login(email, password)
                             } else {
-                                nameError = if (Util.validateName(name)) "Campo requerido" else null
-                                lastNameError = if (Util.validateName(lastName)) "Campo requiredo" else null
-                                confirmPasswordError = if (confirmPassword == password) "No coinciden" else null
+                                nameError = if (Util.validateName(name)) null else "Campo requerido"
+                                lastNameError = if (Util.validateName(lastName)) null else "Campo requiredo"
+                                confirmPasswordError = if (confirmPassword != password) "No coinciden" else null
 
                                 if(nameError == null && lastNameError == null && confirmPasswordError == null)
                                    authViewModel.register(email, password, name, lastName)
@@ -229,6 +229,8 @@ fun LoginScreen(authViewModel: AuthViewModel, navigateBack: () -> Boolean) {
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
+
+                Spacer(modifier = Modifier)
             }
         }
     }

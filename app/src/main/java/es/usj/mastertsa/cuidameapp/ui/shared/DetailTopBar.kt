@@ -1,6 +1,5 @@
 package es.usj.mastertsa.cuidameapp.ui.shared
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
