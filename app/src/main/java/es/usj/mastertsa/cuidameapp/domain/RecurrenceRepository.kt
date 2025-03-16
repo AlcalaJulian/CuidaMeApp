@@ -9,4 +9,5 @@ interface RecurrenceRepository {
     suspend fun updateDosageCompletion(dosageId: Long, complete: Boolean)
     suspend fun deleteDosage(dosageId: Long)
     suspend fun getDosagesForIndication(indicationId: Long): List<Recurrence>
+    fun syncRecurrencesFromFirestore()
 }

@@ -8,4 +8,5 @@ interface MedicationRepository {
     suspend fun getMedicationById(id: Long): MedicineDetail
     suspend fun deleteMedicationById(id: Long)
     suspend fun addMedication(medication: Medicine)
+    fun syncMedicationsFromFirestore()
 }

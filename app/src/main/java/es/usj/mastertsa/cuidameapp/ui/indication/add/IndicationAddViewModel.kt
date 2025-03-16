@@ -16,9 +16,12 @@ import es.usj.mastertsa.cuidameapp.domain.indication.AddAnIndicationToPatientUse
 import es.usj.mastertsa.cuidameapp.domain.indication.Dosage
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.Recurrence
+import es.usj.mastertsa.cuidameapp.domain.indication.SyncRecurrenciesUseCase
 import kotlinx.coroutines.launch
 
-class MedicationAddViewModel(private val addAnIndicationToPatientUseCase: AddAnIndicationToPatientUseCase): ViewModel() {
+class IndicationAddViewModel(
+    private val addAnIndicationToPatientUseCase: AddAnIndicationToPatientUseCase,
+): ViewModel() {
 
     var uiState by mutableStateOf(MedicationAddUiState())
         private set
@@ -125,9 +128,9 @@ class MedicationAddViewModel(private val addAnIndicationToPatientUseCase: AddAnI
 
                 val indicationRepository = IndicationRepositoryImpl(PatientDatabase.provideDatabase(context))
                 val recurrenceRepository = RecurrenceRepositoryIml(PatientDatabase.provideDatabase(context))
-                val useCase = AddAnIndicationToPatientUseCase(indicationRepository, recurrenceRepository)
+                val IndicationUseCase = AddAnIndicationToPatientUseCase(indicationRepository, recurrenceRepository)
 
-                return MedicationAddViewModel(useCase) as T
+                return IndicationAddViewModel(IndicationUseCase) as T
             }
         }
     }

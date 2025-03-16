@@ -11,50 +11,70 @@ import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.MedicineRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.medicine.DeleteMedicineUseCase
 import es.usj.mastertsa.cuidameapp.domain.medicine.GetAllMedicinesUseCase
+import es.usj.mastertsa.cuidameapp.domain.medicine.SyncMedicationsUseCase
 import kotlinx.coroutines.launch
 
 class MedicineListViewModel(
-    private val useCase: GetAllMedicinesUseCase,
-    private val deleteUseCase: DeleteMedicineUseCase
-): ViewModel() {
+    private val getAllMedicationsUseCase: GetAllMedicinesUseCase,
+    private val deleteMedicationUseCase: DeleteMedicineUseCase,
+    private val syncMedicationsUseCase: SyncMedicationsUseCase
+) : ViewModel() {
 
     var uiState by mutableStateOf(MedicineListUiState())
         private set
 
+    init {
+        syncMedicationsFromFirestore()
+        getAllMedications()
+    }
 
-    fun getAllMedications(){
+    fun getAllMedications() {
         uiState = uiState.copy(loading = true)
-         viewModelScope.launch {
-             try {
-                 val medicaments = useCase.execute()
-                 uiState = uiState.copy(loading = false, data = medicaments)
-             } catch (ex: Exception) {
-                 uiState = uiState.copy(loading = false, error = ex.message)
-             }
-         }
+        viewModelScope.launch {
+            try {
+                val medications = getAllMedicationsUseCase.execute()
+                uiState = uiState.copy(loading = false, data = medications)
+            } catch (exception: Exception) {
+                uiState = uiState.copy(loading = false, error = exception.message)
+            }
+        }
     }
 
     fun deleteMedication(id: Long) {
         viewModelScope.launch {
             try {
-                deleteUseCase.execute(id)
-                getAllMedications()  // Refresh the list after deletion
-            } catch (e: Exception) {
-                uiState = uiState.copy(error = "Failed to delete medication")
+                deleteMedicationUseCase.execute(id)
+                getAllMedications()
+            } catch (exception: Exception) {
+                uiState = uiState.copy(error = exception.message)
             }
         }
     }
 
-    companion object{
-        fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-
-                val repo = MedicineRepositoryImpl(PatientDatabase.provideDatabase(context))
-                val getAllUseCase = GetAllMedicinesUseCase(repo)
-                val deleteUseCase = DeleteMedicineUseCase(repo)
-                return MedicineListViewModel(getAllUseCase, deleteUseCase) as T
+    fun syncMedicationsFromFirestore() {
+        viewModelScope.launch {
+            try {
+                syncMedicationsUseCase.execute()
+            } catch (exception: Exception) {
+                uiState = uiState.copy(error = exception.message)
             }
         }
+    }
 
+    companion object {
+        fun factory(context: Context): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val database = PatientDatabase.provideDatabase(context)
+                val repository = MedicineRepositoryImpl(database)
+                val getAllMedicationsUseCase = GetAllMedicinesUseCase(repository)
+                val deleteMedicationUseCase = DeleteMedicineUseCase(repository)
+                val syncMedicationsUseCase = SyncMedicationsUseCase(repository)
+                return MedicineListViewModel(
+                    getAllMedicationsUseCase,
+                    deleteMedicationUseCase,
+                    syncMedicationsUseCase
+                ) as T
+            }
+        }
     }
 }

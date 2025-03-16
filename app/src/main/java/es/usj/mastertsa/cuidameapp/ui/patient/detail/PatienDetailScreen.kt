@@ -22,6 +22,7 @@ fun PatientDetailScreen(
     val uiState = viewModel.uiState
 
     LaunchedEffect(viewModel.id) {
+        viewModel.syncPatientFromFirestore(viewModel.id)
         viewModel.getPatientById(viewModel.id)
         viewModel.getListOfIndicationsById(viewModel.id)
     }
@@ -36,12 +37,8 @@ fun PatientDetailScreen(
             contentAlignment = Alignment.Center
         ) {
             when {
-                uiState.loading -> {
-                    CircularProgressIndicator()
-                }
-                uiState.error != null -> {
-                    Text(text = "Error: ${uiState.error}", color = MaterialTheme.colorScheme.error)
-                }
+                uiState.loading -> CircularProgressIndicator()
+                uiState.error != null -> Text(text = "Error: ${uiState.error}", color = MaterialTheme.colorScheme.error)
                 else -> {
                     uiState.patient?.let { patient ->
                         Column(
@@ -49,7 +46,6 @@ fun PatientDetailScreen(
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            // Tarjeta con información del paciente
                             ElevatedCard(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
@@ -72,7 +68,6 @@ fun PatientDetailScreen(
 
                             Spacer(modifier = Modifier.height(16.dp))
 
-                            // Lista de indicaciones médicas
                             if (uiState.indicationList.isNotEmpty()) {
                                 Text(
                                     text = "Indicaciones Médicas",
@@ -117,6 +112,7 @@ fun PatientDetailScreen(
         }
     }
 }
+
 
 @Composable
 fun PatientDetailItem(icon: androidx.compose.ui.graphics.vector.ImageVector, text: String) {

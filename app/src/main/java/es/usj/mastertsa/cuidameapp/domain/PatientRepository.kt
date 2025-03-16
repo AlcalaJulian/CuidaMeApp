@@ -8,4 +8,5 @@ interface PatientRepository {
     suspend fun getPatientById(id: Long): PatientDetail
     suspend fun deletePatientById(id: Long)
     suspend fun addPatient(patient: Patient)
+    fun syncPatientsFromFirestore()
 }
