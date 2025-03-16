@@ -53,7 +53,7 @@ class MedicineRepositoryImpl(private val db: PatientDatabase) : MedicationReposi
         medicationsCollection.document(entity.id.toString()).set(entity).await()
     }
 
-    fun syncMedicationsFromFirestore() {
+    override fun syncMedicationsFromFirestore() {
         firestoreListener?.remove()
 
         firestoreListener = medicationsCollection.addSnapshotListener { snapshot, error ->

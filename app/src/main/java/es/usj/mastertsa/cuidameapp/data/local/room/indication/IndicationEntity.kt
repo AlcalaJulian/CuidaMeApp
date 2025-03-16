@@ -6,7 +6,8 @@ import androidx.room.PrimaryKey
 import es.usj.mastertsa.cuidameapp.data.local.room.medicine.MedicineEntity
 import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientEntity
 
-@Entity(tableName = "IndicationRoom",
+@Entity(
+    tableName = "IndicationRoom",
     foreignKeys = [
         ForeignKey(
             entity = PatientEntity::class,
@@ -21,13 +22,12 @@ import es.usj.mastertsa.cuidameapp.data.local.room.patient.PatientEntity
             onDelete = ForeignKey.CASCADE
         )
     ]
-    )
+)
 data class IndicationEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long,
-    val patientId:Long,
-    val medicineId: Int,
-    val recurrence: String, //every 4 hour, every day, week
-    val startDate: String,
-    //val startHour: String,
-    val dosage: Int // 1,2,3 for recurrence
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var patientId: Long = 0,
+    var medicineId: Int = 0,
+    var recurrence: String = "", // Ejemplo: "every 4 hours"
+    var startDate: String = "", // Ejemplo: "2025-03-17"
+    var dosage: Int = 1 // Valor por defecto de dosis mínima
 )

@@ -14,13 +14,14 @@ import es.usj.mastertsa.cuidameapp.domain.patient.AddPatientUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.DeletePatientUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.GetAllPatientsUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.Patient
+import es.usj.mastertsa.cuidameapp.domain.patient.SyncPatientsUseCase
 import kotlinx.coroutines.launch
 
 class PatientListViewModel(
     private val getAllPatient: GetAllPatientsUseCase,
     private val addPatient: AddPatientUseCase,
     private val deletePatient: DeletePatientUseCase,
-    private val repository: PatientRepositoryImpl
+    private val syncPatient: SyncPatientsUseCase
 ) : ViewModel() {
 
     var patients by mutableStateOf(PatientListUiState())
@@ -71,7 +72,15 @@ class PatientListViewModel(
     }
 
     fun syncPatientsFromFirestore() {
-        repository.syncPatientsFromFirestore()
+        patients = patients.copy(loading = true)
+        viewModelScope.launch {
+            try {
+                syncPatient.execute()
+                patients = patients.copy(loading = false)
+            } catch (exception: Exception) {
+                patients = patients.copy(error = exception.message, loading = false)
+            }
+        }
     }
 
     companion object {
@@ -82,12 +91,14 @@ class PatientListViewModel(
                 val getAllPatients = GetAllPatientsUseCase(repository)
                 val addPatientUseCase = AddPatientUseCase(repository)
                 val deletePatientUseCase = DeletePatientUseCase(repository)
+                val syncPatientsUseCase = SyncPatientsUseCase(repository)
 
                 return PatientListViewModel(
                     getAllPatients,
                     addPatientUseCase,
                     deletePatientUseCase,
-                    repository
+                    syncPatientsUseCase
+
                 ) as T
             }
         }

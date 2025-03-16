@@ -47,9 +47,8 @@ class PatientRepositoryImpl(private val db: PatientDatabase) : PatientRepository
     }
 
 
-    fun syncPatientsFromFirestore() {
+    override fun syncPatientsFromFirestore() {
         firestoreListener?.remove()
-
         firestoreListener = patientsCollection.addSnapshotListener { snapshot, error ->
             if (error != null) {
                 return@addSnapshotListener

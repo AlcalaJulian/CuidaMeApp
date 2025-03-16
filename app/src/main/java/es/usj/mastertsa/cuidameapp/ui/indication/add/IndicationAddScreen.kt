@@ -25,7 +25,7 @@ import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 
 @Composable
 fun MedicationAddScreen(
-    viewModel: MedicationAddViewModel = viewModel(factory = MedicationAddViewModel.factory(
+    viewModel: IndicationAddViewModel = viewModel(factory = IndicationAddViewModel.factory(
         LocalContext.current)),
     patientId: Long, // Patient ID passed from navigation
 ){

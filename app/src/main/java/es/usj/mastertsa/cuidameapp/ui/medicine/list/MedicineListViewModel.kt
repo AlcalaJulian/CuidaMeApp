@@ -11,12 +11,13 @@ import es.usj.mastertsa.cuidameapp.data.local.room.PatientDatabase
 import es.usj.mastertsa.cuidameapp.data.repository.MedicineRepositoryImpl
 import es.usj.mastertsa.cuidameapp.domain.medicine.DeleteMedicineUseCase
 import es.usj.mastertsa.cuidameapp.domain.medicine.GetAllMedicinesUseCase
+import es.usj.mastertsa.cuidameapp.domain.medicine.SyncMedicationsUseCase
 import kotlinx.coroutines.launch
 
 class MedicineListViewModel(
     private val getAllMedicationsUseCase: GetAllMedicinesUseCase,
     private val deleteMedicationUseCase: DeleteMedicineUseCase,
-    private val repository: MedicineRepositoryImpl
+    private val syncMedicationsUseCase: SyncMedicationsUseCase
 ) : ViewModel() {
 
     var uiState by mutableStateOf(MedicineListUiState())
@@ -51,7 +52,13 @@ class MedicineListViewModel(
     }
 
     fun syncMedicationsFromFirestore() {
-        repository.syncMedicationsFromFirestore()
+        viewModelScope.launch {
+            try {
+                syncMedicationsUseCase.execute()
+            } catch (exception: Exception) {
+                uiState = uiState.copy(error = exception.message)
+            }
+        }
     }
 
     companion object {
@@ -61,11 +68,11 @@ class MedicineListViewModel(
                 val repository = MedicineRepositoryImpl(database)
                 val getAllMedicationsUseCase = GetAllMedicinesUseCase(repository)
                 val deleteMedicationUseCase = DeleteMedicineUseCase(repository)
-
+                val syncMedicationsUseCase = SyncMedicationsUseCase(repository)
                 return MedicineListViewModel(
                     getAllMedicationsUseCase,
                     deleteMedicationUseCase,
-                    repository
+                    syncMedicationsUseCase
                 ) as T
             }
         }

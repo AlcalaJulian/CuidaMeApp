@@ -9,4 +9,5 @@ interface IndicationRepository {
     suspend fun getIndicationsByPatientId(id: Long): List<IndicationDetail>
     suspend fun deleteIndicationById(id: Long)
     suspend fun addAnIndicationToPatient(indication: Indication): Long
+    fun syncIndicationsFromFirestore()
 }
