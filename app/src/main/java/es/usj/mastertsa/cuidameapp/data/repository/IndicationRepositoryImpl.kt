@@ -62,7 +62,6 @@ class IndicationRepositoryImpl(private val db: PatientDatabase): IndicationRepos
                 ?.mapNotNull { it.toObject(IndicationEntity::class.java) }
                 ?.let { indicationsFromFirestore ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        db.getIndicationDao().deleteAllIndications()
                         db.getIndicationDao().insertIndications(indicationsFromFirestore)
                     }
                 }

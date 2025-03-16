@@ -40,8 +40,8 @@ class IndicationListViewModel(
     fun getAllMedications(){
         viewModelScope.launch {
             try {
-//                syncIndicationsUseCase.execute()
-//                syncRecurrenceUseCase.execute()
+                syncIndicationsUseCase.execute()
+                syncRecurrenceUseCase.execute()
                 val useCaseGetAllMedications = getAllMedicationsUseCase.execute()
                 indicationUiState = indicationUiState.copy(medicationsList = useCaseGetAllMedications, loading = false)
             } catch(exception:Exception) {

@@ -57,7 +57,6 @@ class PatientRepositoryImpl(private val db: PatientDatabase) : PatientRepository
                 ?.mapNotNull { it.toObject(PatientEntity::class.java) }
                 ?.let { patientsFromFirestore ->
                     CoroutineScope(Dispatchers.IO).launch {
-                        db.getPatientDao().deleteAllPatients()
                         db.getPatientDao().insertPatients(patientsFromFirestore)
                     }
                 }
