@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,22 +22,8 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListTopBar(title: String, showDialog:()-> Unit) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         title = { Text(text = title, color = Color.Black) },
-        actions = {
-            IconButton(onClick = { showDialog() }, modifier = Modifier.offset(x = (-15).dp)) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar")
-            }
-        },
-        colors = TopAppBarColors(
-            containerColor = Color.White,
-            scrolledContainerColor = MaterialTheme.colorScheme.primary,
-            navigationIconContentColor = Color.Black,
-            titleContentColor = Color.Black,
-            actionIconContentColor = Color.Black
-        ),
-        modifier = Modifier
-            .padding(12.dp)
     )
 
 //    if (showDialog) {

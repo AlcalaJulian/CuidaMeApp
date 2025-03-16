@@ -12,9 +12,7 @@ data class PatientEntity(
     val lastName: String = "",
     val birthDate: String = "",
     val emergencyContact: String = ""
-) {
-    constructor() : this(0, "", "", "", "", "", "")
-}
+)
 
 
 

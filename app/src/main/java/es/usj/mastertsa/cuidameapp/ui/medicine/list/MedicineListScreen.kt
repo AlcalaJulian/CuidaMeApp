@@ -42,6 +42,7 @@ fun MedicineListScreen(
     var medicationToEdit by remember { mutableStateOf<Medicine?>(null) }
 
     LaunchedEffect(Unit) {
+        viewModel.syncMedicationsFromFirestore()
         viewModel.getAllMedications()
     }
 
@@ -100,7 +101,7 @@ fun MedicineListScreen(
                                 viewModel.getAllMedications()
                                 showDialog = false
                             },
-                            existingMedicine = medicationToEdit // Pass the existing medicine to edit
+                            existingMedicine = medicationToEdit
                         )
                     }
                 }
@@ -128,7 +129,7 @@ fun MedicineList(
                     navigateToDetail(medication.id)
                 },
                 onDelete = { onDelete(medication.id) },
-                onEdit = { onEdit(medication) } // Trigger the edit action
+                onEdit = { onEdit(medication) }
             )
         }
     }
@@ -143,16 +144,14 @@ fun MedicationItem(
     onDelete: (Long) -> Unit,
     onEdit: (Medicine) -> Unit
 ) {
-    // For managing the confirmation dialog visibility
     var showDialog by remember { mutableStateOf(false) }
 
     SwipeBox(
         onDelete = {
             showDialog = true
         },
-        onEdit = { onEdit(medication) }, // Trigger edit when clicked
+        onEdit = { onEdit(medication) },
     ) {
-        // Display the medication item as a card
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -199,13 +198,12 @@ fun MedicationItem(
         }
     }
 
-    // Confirmation dialog
     if (showDialog) {
         DeleteConfirmDialog(
             message = "",
             ok = {
-                onDelete(medication.id) // Perform the delete action
-                showDialog = false // Close the dialog after deletion
+                onDelete(medication.id)
+                showDialog = false
             },
             cancel = { showDialog = false }
         )
