@@ -28,9 +28,12 @@ class RecurrenceRepositoryIml(private val db: PatientDatabase): RecurrenceReposi
 
     override suspend fun addRecurrences(recurrences: List<Recurrence>) {
         val entities = recurrences.map { it.toEntity() }
-        db.getRecurrenceDao().insertRecurrences(entities)
+
+
+
         entities.forEach {
-            recurrencesCollection.document(it.id.toString()).set(it).await()
+            val id = db.getRecurrenceDao().insertRecurrence(it)
+            recurrencesCollection.document(id.toString()).set(it.copy(id = id)).await()
         }    }
 
     override suspend fun getDosagesForIndication(indicationId: Long): List<Recurrence> {

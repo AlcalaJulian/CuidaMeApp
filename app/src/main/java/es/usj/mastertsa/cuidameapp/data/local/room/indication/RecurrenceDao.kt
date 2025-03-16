@@ -22,6 +22,9 @@ interface RecurrenceDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertRecurrences(list: List<RecurrenceEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertRecurrence(recurrence: RecurrenceEntity):Long
+
     @Query("DELETE FROM RecurrenceRoom WHERE id = :id")
     suspend fun deleteRecurrence(id: Long)
 

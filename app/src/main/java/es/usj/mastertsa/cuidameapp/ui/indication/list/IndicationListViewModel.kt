@@ -18,6 +18,8 @@ import es.usj.mastertsa.cuidameapp.domain.indication.Dosage
 import es.usj.mastertsa.cuidameapp.domain.indication.GetAllIndicationsUseCase
 import es.usj.mastertsa.cuidameapp.domain.indication.Indication
 import es.usj.mastertsa.cuidameapp.domain.indication.Recurrence
+import es.usj.mastertsa.cuidameapp.domain.indication.SyncIndicationsUseCase
+import es.usj.mastertsa.cuidameapp.domain.indication.SyncRecurrenceUseCase
 import es.usj.mastertsa.cuidameapp.domain.medicine.GetAllMedicinesUseCase
 import es.usj.mastertsa.cuidameapp.domain.patient.GetAllPatientsUseCase
 import kotlinx.coroutines.launch
@@ -28,7 +30,9 @@ class IndicationListViewModel(
     private val addAnIndicationToPatientUseCase: AddAnIndicationToPatientUseCase,
     private val getAllPatientsUseCase: GetAllPatientsUseCase,
     private val getAllMedicationsUseCase: GetAllMedicinesUseCase,
-    private val deleteIndicationUseCase: DeleteIndicationUseCase
+    private val deleteIndicationUseCase: DeleteIndicationUseCase,
+    private val syncIndicationsUseCase: SyncIndicationsUseCase,
+    private val syncRecurrenceUseCase: SyncRecurrenceUseCase
 ): ViewModel() {
     var indicationUiState by mutableStateOf(IndicationListUiState())
         private set
@@ -36,6 +40,8 @@ class IndicationListViewModel(
     fun getAllMedications(){
         viewModelScope.launch {
             try {
+                syncIndicationsUseCase.execute()
+                syncRecurrenceUseCase.execute()
                 val useCaseGetAllMedications = getAllMedicationsUseCase.execute()
                 indicationUiState = indicationUiState.copy(medicationsList = useCaseGetAllMedications, loading = false)
             } catch(exception:Exception) {
@@ -189,12 +195,17 @@ class IndicationListViewModel(
                 val getAllPatientsUseCase = GetAllPatientsUseCase(patientRepositoryImpl)
                 val getAllMedicationsUseCase = GetAllMedicinesUseCase(medicationsRepositoryImpl)
                 val deleteUseCase = DeleteIndicationUseCase(indicationRepositoryImpl)
+                var syncRecurrenceUseCase = SyncRecurrenceUseCase(recurrenceRepository)
+                var syncIndicationUseCase = SyncIndicationsUseCase(indicationRepositoryImpl)
+
                 return IndicationListViewModel(
                     getAllIndicationsUseCase,
                     addAnIndicationToPatientUseCase,
                     getAllPatientsUseCase,
                     getAllMedicationsUseCase,
-                    deleteUseCase
+                    deleteUseCase,
+                    syncIndicationUseCase,
+                    syncRecurrenceUseCase
                 ) as T
             }
         }
