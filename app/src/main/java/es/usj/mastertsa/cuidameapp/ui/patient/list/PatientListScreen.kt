@@ -32,6 +32,7 @@ fun PatientListScreen(
     var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        viewModel.syncPatientsFromFirestore()
         viewModel.getAllPatients()
     }
 
@@ -52,17 +53,13 @@ fun PatientListScreen(
                 .fillMaxSize()
         ) {
             when {
-                uiState.loading -> {
-                    LoadingIndicator()
-                }
-                uiState.error != null -> {
-                    ErrorText(message = uiState.error)
-                }
+                uiState.loading -> LoadingIndicator()
+                uiState.error != null -> ErrorText(message = uiState.error)
                 else -> {
                     PatientList(
                         patients = uiState.data,
                         navigateToDetail = navigateToDetail,
-                        onDelete = { id -> viewModel.deleteMedication(id) }
+                        onDelete = { id -> viewModel.deletePatient(id) }
                     )
                 }
             }
@@ -75,14 +72,6 @@ fun PatientListScreen(
             viewModel = viewModel
         )
     }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PatientListTopBar() {
-    CenterAlignedTopAppBar(
-        title = { Text(text = "Lista de Pacientes", style = MaterialTheme.typography.headlineSmall) }
-    )
 }
 
 @Composable
@@ -100,6 +89,15 @@ fun PatientList(
             PatientItem(patient = patient, onClick = { navigateToDetail(patient.id) }, onDelete = { onDelete(patient.id) })
         }
     }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PatientListTopBar() {
+    CenterAlignedTopAppBar(
+        title = { Text(text = "Lista de Pacientes", style = MaterialTheme.typography.headlineSmall) }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
