@@ -24,12 +24,10 @@ import androidx.compose.ui.unit.dp
 fun ListTopBar(title: String, showDialog:()-> Unit) {
     CenterAlignedTopAppBar(
         title = { Text(text = title, color = Color.Black) },
+        actions = {
+            IconButton(onClick = { showDialog() }, modifier = Modifier.offset(x = (-15).dp)) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar")
+            }
+        },
     )
-
-//    if (showDialog) {
-//        MedicationAddScreen(onDismiss = { showDialog = false }, onSuccess = {
-//            refreshList()
-//            showDialog = false
-//        })
-//    }
 }
